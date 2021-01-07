@@ -3,7 +3,11 @@
 #include <exception>
 
 /*Creamos una clase numero la cual sera la clase base para representar el conjunto 
-total de numeros*/
+total de numeros, dicha clase funciona como un template con la diferencia de que esta
+diseñada para arrojar un error en caso de que el tipo seleccionado no sea del tipo
+numerico(int,long,float,...,etc.), dicha clase contine los operadores aritmeticos y
+booleanos sobrecargados para poder interactuar con otros objetos de la misma clase y
+con datos de tipo numerico.*/
 template <class T>
 class Number
 {
