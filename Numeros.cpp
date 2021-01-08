@@ -11,8 +11,11 @@ con datos de tipo numerico.*/
 template <class T>
 class Number
 {
-protected:
+protected: //el valor solo es accesible en las clases derivadas
     T value;
+
+public: //copia en caso de querer utilizar la clase como un objeto
+    T valcopy;
 
 public:
     /*Constructores*/
@@ -22,7 +25,7 @@ public:
 
     /*Metodos*/
     Number<T> &setvalue(T new_value); //Cambiar el valor del numero
-
+    Number<T> &getvalue();
     virtual void print(); // Imprime el valor almacenada
 
     /*Operadores aritmeticos*/
@@ -33,6 +36,7 @@ public:
     Number<T> &operator*(const Number<T> &val2); //Operador para multiplicaciones(modifican el valor del elemento usando el operador a * b)
     Number<T> &operator/(const Number<T> &val2); //Operador para divisiones(modifican el valor del elemento usando el operador a/b)
     Number<T> &operator=(const Number<T> &val2); //Operador de asignacion(modifican el valor del elemento usando el operador a = x)
+
     //Operadores para objetos de la clase y numeros
     Number<T> &operator+(const T &val2); //su funcion es la misma solo que en esta podemos usar numeros con objetos(ObjNum + 10)
     Number<T> &operator-(const T &val2); //su funcion es la misma solo que en esta podemos usar numeros con objetos(ObjNum - 10)
@@ -49,12 +53,12 @@ public:
     bool &operator==(const Number<T> &val2) const;
     bool &operator!=(const Number<T> &val2) const;
     //Operadores para objetos de la clase y numeros
-    bool &operator<(const T &Val2) const;
-    bool &operator>(const T &val2) const;
-    bool &operator<=(const T &val2) const;
-    bool &operator>=(const T &val2) const;
-    bool &operator==(const T &val2) const;
-    bool &operator!=(const T &val2) const;
+    bool operator<(const T &Val2) const;
+    bool operator>(const T &val2) const;
+    bool operator<=(const T &val2) const;
+    bool operator>=(const T &val2) const;
+    bool operator==(const T &val2) const;
+    bool operator!=(const T &val2) const;
 
     ~Number();
 };
@@ -69,6 +73,7 @@ Number<T>::Number(T value)
         throw std::invalid_argument("The type is not a numeric type");
 
     this->value = value;
+    this->valcopy = value;
 }
 template <class T>
 Number<T>::Number()
@@ -79,20 +84,26 @@ Number<T>::Number()
         sizeof(T) != sizeof(short int) && sizeof(T) != sizeof(long int) && sizeof(T) != sizeof(long double))
         throw std::invalid_argument("The type is not a numeric type");
 }
-
 template <class T>
 Number<T>::Number(const Number<T> &Num)
 { //Recibe un objeto Numero y construye una copia del mismo
     this->value = Num.value;
+    this->valcopy = Num.value;
 }
 /*METODOS*/
 template <class T>
 Number<T> &Number<T>::setvalue(T new_value)
 {
     value = new_value;
+    valcopy = new_value;
     return *this;
 }
+template <class T>
+Number<T> &Number<T>::getvalue()
+{
 
+    return this->valcopy;
+}
 template <class T>
 void Number<T>::print()
 {
@@ -103,30 +114,35 @@ template <class T>
 Number<T> &Number<T>::operator+(const Number<T> &val2)
 {
     this->value = this->value + val2.value;
+    this->valcopy = this->value;
     return *this;
 }
 template <class T>
 Number<T> &Number<T>::operator-(const Number<T> &val2)
 {
     this->value = this->value - val2.value;
+    this->valcopy = this->value;
     return *this;
 }
 template <class T>
 Number<T> &Number<T>::operator*(const Number<T> &val2)
 {
     this->value = this->value * val2.value;
+    this->valcopy = this->value;
     return *this;
 }
 template <class T>
 Number<T> &Number<T>::operator/(const Number<T> &val2)
 {
     this->value = this->value / val2.value;
+    this->valcopy = this->value;
     return *this;
 }
 template <class T>
 Number<T> &Number<T>::operator=(const Number<T> &val2)
 {
     this->value = val2.value;
+    this->valcopy = val2.value;
     return *this;
 }
 
@@ -135,30 +151,35 @@ template <class T>
 Number<T> &Number<T>::operator+(const T &val2)
 {
     this->value = this->value + val2;
+    this->valcopy = this->value;
     return *this;
 }
 template <class T>
 Number<T> &Number<T>::operator-(const T &val2)
 {
     this->value = this->value - val2;
+    this->valcopy = this->value;
     return *this;
 }
 template <class T>
 Number<T> &Number<T>::operator*(const T &val2)
 {
     this->value = this->value * val2;
+    this->valcopy = this->value;
     return *this;
 }
 template <class T>
 Number<T> &Number<T>::operator/(const T &val2)
 {
     this->value = this->value / val2;
+    this->valcopy = this->value;
     return *this;
 }
 template <class T>
 Number<T> &Number<T>::operator=(const T &val2)
 {
     this->value = val2;
+    this->valcopy = this->value;
     return *this;
 }
 
@@ -196,34 +217,34 @@ bool &Number<T>::operator!=(const Number<T> &num2) const
 
 /*OPERADORES BOOLEANOS CON NUMEROS*/
 template <class T>
-bool &Number<T>::operator<(const T &num2) const
+bool Number<T>::operator<(const T &num2) const
 {
-    return this->value < num2.value;
+    return this->value < num2;
 }
 template <class T>
-bool &Number<T>::operator>(const T &num2) const
+bool Number<T>::operator>(const T &num2) const
 {
-    return this->value > num2.value;
+    return this->value > num2;
 }
 template <class T>
-bool &Number<T>::operator<=(const T &num2) const
+bool Number<T>::operator<=(const T &num2) const
 {
-    return this->value <= num2.value;
+    return this->value <= num2;
 }
 template <class T>
-bool &Number<T>::operator>=(const T &num2) const
+bool Number<T>::operator>=(const T &num2) const
 {
-    return this->value >= num2.value;
+    return this->value >= num2;
 }
 template <class T>
-bool &Number<T>::operator==(const T &num2) const
+bool Number<T>::operator==(const T &num2) const
 {
-    return this->value == num2.value;
+    return this->value == num2;
 }
 template <class T>
-bool &Number<T>::operator!=(const T &num2) const
+bool Number<T>::operator!=(const T &num2) const
 {
-    return this->value != num2.value;
+    return this->value != num2;
 }
 
 template <class T>
@@ -231,19 +252,48 @@ Number<T>::~Number()
 {
 }
 
-class Natural : public Number<long long>
+/*NUMEROS NATURALES*/
+/*La clase de los numeros naturales hereda las funciones de la clase Number
+las cuales se heredan como 'private' */
+class Natural : private Number<unsigned long long>
 {
 
 public:
-    Natural(int Num);
+    /*Constructores*/
+    Natural(unsigned long long &Num);
+    Natural();
+    Natural(const Natural &copy);
+    Natural(Number<unsigned long long> &Num);
+    /*Operadores aritmeticos*/
     ~Natural();
 };
 
-/*Natural::Natural()
+Natural::Natural(unsigned long long &Num)
 {
+    if (Num < 1) //Si el valor es menor a 1 arrojamos una excepcion
+        throw std::invalid_argument("Value need be more greater than zero");
+    else //De lo contrario usando la clase Number  asignamos el valor
+        this->setvalue(Num);
 }
 
-Natural::~Natural(){} */
+Natural::Natural(Number<unsigned long long> &Num)
+{
+    if (Num < 1) //Si el valor es menor a 1 arrojamos una excepcion
+        throw std::invalid_argument("Value need be more greater than zero");
+    else //De lo contrario usando la clase Number  asignamos el valor
+        this->setvalue(Num.valcopy);
+}
+
+Natural::Natural()
+{ //si no se inicializa el objeto el valor por default es 1
+    this->setvalue(1);
+}
+Natural::Natural(const Natural &copy)
+{ //Constructor copia(copia los datos de un Objeto de la misma clase)
+    this->setvalue(copy.value);
+}
+
+Natural::~Natural() {}
 
 int main(int argc, char const *argv[])
 {
