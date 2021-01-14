@@ -260,15 +260,20 @@ class Natural : private Number<unsigned long long>
 
 public:
     /*Constructores*/
-    Natural(unsigned long long &Num);
+    Natural(long long &Num);
     Natural();
     Natural(const Natural &copy);
     Natural(Number<unsigned long long> &Num);
     /*Operadores aritmeticos*/
+    Natural operator+(const Natural &Num2);
+    Natural operator-(const Natural &Num2);
+    Natural operator*(const Natural &Num2);
+    Natural &operator=(const Natural &Num2);
+
     ~Natural();
 };
 
-Natural::Natural(unsigned long long &Num)
+Natural::Natural(long long &Num)
 {
     if (Num < 1) //Si el valor es menor a 1 arrojamos una excepcion
         throw std::invalid_argument("Value need be more greater than zero");
@@ -293,7 +298,102 @@ Natural::Natural(const Natural &copy)
     this->setvalue(copy.value);
 }
 
+Natural Natural::operator+(const Natural &Num2)
+{
+    Natural Resultado;
+    Resultado.value = this->value + Num2.value;
+    return Resultado;
+}
+
+Natural Natural::operator-(const Natural &Num2)
+{
+    Natural Resultado;
+    Resultado.value = this->value - Num2.value;
+    return Resultado;
+}
+
+Natural Natural::operator*(const Natural &Num2)
+{
+    Natural Resultado;
+    Resultado.value = this->value * Num2.value;
+    return Resultado;
+}
+
+Natural &Natural::operator=(const Natural &Num2)
+{
+
+    this->value = Num2.value;
+    return *this;
+}
+
 Natural::~Natural() {}
+
+class Entero : private Number<long long>
+{
+
+public:
+    Entero(long long Value);
+    Entero(const Entero &Num2);
+    Entero(Number<long long> &Num2);
+    Entero();
+
+    Entero operator+(const Entero &Num2);
+    Entero operator-(const Entero &Num2);
+    Entero operator*(const Entero &Num2);
+    Entero &operator=(const Entero &Num2);
+
+    ~Entero();
+};
+
+Entero::Entero(long long Value)
+{
+    this->value = Value;
+}
+Entero::Entero(const Entero &Num2)
+{
+    this->value = Num2.value;
+}
+Entero::Entero(Number<long long> &Num2)
+{
+    this->value = Num2.valcopy;
+}
+Entero::Entero()
+{
+    this->value = 0;
+}
+
+Entero Entero::operator+(const Entero &Num2)
+{
+    Entero Result;
+
+    Result.value = this->value + Num2.value;
+    return Result;
+}
+Entero Entero::operator-(const Entero &Num2)
+{
+    Entero Result;
+
+    Result.value = this->value - Num2.value;
+    return Result;
+}
+Entero Entero::operator*(const Entero &Num2)
+{
+    Entero Result;
+
+    Result.value = this->value * Num2.value;
+    return Result;
+}
+Entero &Entero::operator=(const Entero &Num2)
+{
+    Entero Result;
+
+    this->value = Num2.value;
+    return *this;
+}
+
+Entero::~Entero()
+{
+}
 
 int main(int argc, char const *argv[])
 {
