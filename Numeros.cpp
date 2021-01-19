@@ -342,6 +342,16 @@ public:
     Entero operator*(const Entero &Num2);
     Entero &operator=(const Entero &Num2);
 
+    Entero operator+(const long long &Num2);
+    Entero operator-(const long long &Num2);
+    Entero operator*(const long long &Num2);
+    Entero &operator=(const long long &Num2);
+
+    bool operator!=(const Entero &Num2) const;
+    bool operator==(const Entero &Num2) const;
+    bool operator<(const Entero &Num2) const;
+    bool operator>(const Entero &Num2) const;
+
     ~Entero();
 };
 
@@ -391,7 +401,148 @@ Entero &Entero::operator=(const Entero &Num2)
     return *this;
 }
 
+Entero Entero::operator+(const long long &Num2)
+{
+    Entero Result;
+
+    Result.value = this->value + Num2;
+    return Result;
+}
+Entero Entero::operator-(const long long &Num2)
+{
+    Entero Result;
+
+    Result.value = this->value - Num2;
+    return Result;
+}
+Entero Entero::operator*(const long long &Num2)
+{
+    Entero Result;
+
+    Result.value = this->value * Num2;
+    return Result;
+}
+Entero &Entero::operator=(const long long &Num2)
+{
+    Entero Result;
+
+    this->value = Num2;
+    return *this;
+}
+
+bool Entero::operator==(const Entero &Num2) const
+{
+    return (this->value == Num2.value);
+}
+bool Entero::operator!=(const Entero &Num2) const
+{
+    return (this->value != Num2.value);
+}
+bool Entero::operator<(const Entero &Num2) const
+{
+    return (this->value < Num2.value);
+}
+bool Entero::operator>(const Entero &Num2) const
+{
+    return (this->value > Num2.value);
+}
 Entero::~Entero()
+{
+}
+
+class Racional : private Number<long long>
+{
+private:
+    Entero Numerador;
+    Entero Denominador;
+
+public:
+    Racional(long long Num, long long Den);
+    Racional(const Racional &N2);
+    Racional();
+
+    Racional operator+(const Racional &R2);
+    Racional operator-(const Racional &R2);
+    Racional operator*(const Racional &R2);
+    Racional &operator=(const Racional &R2);
+
+    ~Racional();
+};
+
+Racional::Racional(long long Num, long long Den)
+{
+    if (Den == 0)
+        throw std::invalid_argument("El denominador no puede ser 0");
+    this->Numerador = Num;
+    this->Denominador = Den;
+}
+
+Racional::Racional(const Racional &N2)
+{
+    this->Numerador = N2.Numerador;
+    this->Denominador = N2.Denominador;
+}
+
+Racional::Racional()
+{
+    this->Numerador = 1;
+    this->Denominador = 1;
+}
+
+Racional Racional::operator+(const Racional &R2)
+{
+    Racional Result;
+
+    if (this->Denominador == R2.Denominador)
+    {
+        Result.Numerador = this->Numerador + R2.Numerador;
+        Result.Denominador = this->Denominador;
+    }
+    else
+    {
+        Result.Numerador = (this->Numerador * R2.Denominador) + (this->Denominador * R2.Numerador);
+        Result.Denominador = this->Denominador * R2.Denominador;
+    }
+
+    return Result;
+}
+
+Racional Racional::operator-(const Racional &R2)
+{
+    Racional Result;
+
+    if (this->Denominador == R2.Denominador)
+    {
+        Result.Numerador = this->Numerador + R2.Numerador;
+        Result.Denominador = this->Denominador;
+    }
+    else
+    {
+        Result.Numerador = (this->Numerador * R2.Denominador) - (this->Denominador * R2.Numerador);
+        Result.Denominador = this->Denominador * R2.Denominador;
+    }
+
+    return Result;
+}
+
+Racional Racional::operator*(const Racional &R2)
+{
+    Racional Result;
+
+    Result.Numerador = this->Numerador * R2.Numerador;
+    Result.Denominador = this->Denominador * R2.Denominador;
+
+    return Result;
+}
+
+Racional &Racional::operator=(const Racional &R2)
+{
+    this->Numerador = R2.Numerador;
+    this->Denominador = R2.Denominador;
+    return *this;
+}
+
+Racional::~Racional()
 {
 }
 
