@@ -25,7 +25,7 @@ public:
 
     /*Metodos*/
     Number<T> &setvalue(T new_value); //Cambiar el valor del numero
-    Number<T> &getvalue();
+    T getvalue();
     virtual void print(); // Imprime el valor almacenada
 
     /*Operadores aritmeticos*/
@@ -99,10 +99,10 @@ Number<T> &Number<T>::setvalue(T new_value)
     return *this;
 }
 template <class T>
-Number<T> &Number<T>::getvalue()
+T Number<T>::getvalue()
 {
 
-    return this->valcopy;
+    return this->value;
 }
 template <class T>
 void Number<T>::print()
@@ -337,6 +337,8 @@ public:
     Entero(Number<long long> &Num2);
     Entero();
 
+    int val(); //retorna el valor del Entero como un int
+
     Entero operator+(const Entero &Num2);
     Entero operator-(const Entero &Num2);
     Entero operator*(const Entero &Num2);
@@ -351,6 +353,11 @@ public:
     bool operator==(const Entero &Num2) const;
     bool operator<(const Entero &Num2) const;
     bool operator>(const Entero &Num2) const;
+
+    bool operator!=(const int &Num2) const;
+    bool operator==(const int &Num2) const;
+    bool operator<(const int &Num2) const;
+    bool operator>(const int &Num2) const;
 
     ~Entero();
 };
@@ -370,6 +377,11 @@ Entero::Entero(Number<long long> &Num2)
 Entero::Entero()
 {
     this->value = 0;
+}
+
+int Entero::val()
+{
+    return this->value;
 }
 
 Entero Entero::operator+(const Entero &Num2)
@@ -446,6 +458,24 @@ bool Entero::operator>(const Entero &Num2) const
 {
     return (this->value > Num2.value);
 }
+
+bool Entero::operator==(const int &Num2) const
+{
+    return (this->value == Num2);
+}
+bool Entero::operator!=(const int &Num2) const
+{
+    return (this->value != Num2);
+}
+bool Entero::operator<(const int &Num2) const
+{
+    return (this->value < Num2);
+}
+bool Entero::operator>(const int &Num2) const
+{
+    return (this->value > Num2);
+}
+
 Entero::~Entero()
 {
 }
@@ -460,6 +490,9 @@ public:
     Racional(long long Num, long long Den);
     Racional(const Racional &N2);
     Racional();
+    //Metodos de la clase Racional
+    void simplify(); //Simplifica el numero racional si no es simplificable el numero no se modifica
+    void print();
 
     Racional operator+(const Racional &R2);
     Racional operator-(const Racional &R2);
@@ -489,6 +522,48 @@ Racional::Racional()
     this->Denominador = 1;
 }
 
+void Racional::simplify()
+{
+    bool is_simplifying = false;
+    if (this->Numerador == this->Denominador)
+    {
+        this->Numerador = 1;
+        this->Denominador = 1;
+        return;
+    }
+    else
+    {
+        for (int i = 2; i < this->Numerador.val(); i++)
+        {
+            if (this->Numerador.val() % i == 0)
+            {
+                if (this->Denominador.val() % i == 0)
+                {
+                    this->Numerador = this->Numerador.val() / i;
+                    this->Denominador = this->Denominador.val() / i;
+                    is_simplifying = true;
+                    break;
+                }
+            }
+        }
+        if (!is_simplifying)
+            return;
+        else
+            this->simplify();
+    }
+}
+
+void Racional::print()
+{
+    if (this->Numerador == this->Denominador)
+    { //Si el numerador y el denominador son el mismo imprimos el numero Entero
+        std::cout << this->Numerador.val() << std::endl;
+    }
+    else
+    {
+        std::cout << this->Numerador.val() << " / " << this->Denominador.val() << std::endl;
+    }
+}
 Racional Racional::operator+(const Racional &R2)
 {
     Racional Result;
@@ -503,8 +578,9 @@ Racional Racional::operator+(const Racional &R2)
         Result.Numerador = (this->Numerador * R2.Denominador) + (this->Denominador * R2.Numerador);
         Result.Denominador = this->Denominador * R2.Denominador;
     }
+    Result.simplify(); //simplificamos el resultado
 
-    return Result;
+    return Result; //retornamos el resultado simplificado
 }
 
 Racional Racional::operator-(const Racional &R2)
@@ -521,8 +597,9 @@ Racional Racional::operator-(const Racional &R2)
         Result.Numerador = (this->Numerador * R2.Denominador) - (this->Denominador * R2.Numerador);
         Result.Denominador = this->Denominador * R2.Denominador;
     }
+    Result.simplify(); //simplificamos el resultado
 
-    return Result;
+    return Result; //retornamos el resultado simplificado
 }
 
 Racional Racional::operator*(const Racional &R2)
@@ -531,8 +608,9 @@ Racional Racional::operator*(const Racional &R2)
 
     Result.Numerador = this->Numerador * R2.Numerador;
     Result.Denominador = this->Denominador * R2.Denominador;
+    Result.simplify(); //simplificamos el resultado
 
-    return Result;
+    return Result; //retornamos el resultado simplificado
 }
 
 Racional &Racional::operator=(const Racional &R2)
@@ -546,17 +624,28 @@ Racional::~Racional()
 {
 }
 
+class Real : public Number<long double>
+{
+private:
+public:
+    Real(/* args */);
+    ~Real();
+};
+
+Real::Real(/* args */)
+{
+}
+
+Real::~Real()
+{
+}
+
 int main(int argc, char const *argv[])
 {
+    Racional R(4, 16);
+    R.print();
+    R.simplify();
+    R.print();
 
-    Number<long> N(100), N2(1000), C;
-
-    N + N2;
-
-    N.print();
-
-    C = N + N2;
-
-    C.print();
     return 0;
 }
