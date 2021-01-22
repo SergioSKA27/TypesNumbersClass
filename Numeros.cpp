@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 #include <vector>
 #include <exception>
 
@@ -252,6 +253,23 @@ Number<T>::~Number()
 {
 }
 
+class Numeros
+{
+private:
+    /* data */
+public:
+    Numeros(/* args */);
+    ~Numeros();
+};
+
+Numeros::Numeros(/* args */)
+{
+}
+
+Numeros::~Numeros()
+{
+}
+
 /*NUMEROS NATURALES*/
 /*La clase de los numeros naturales hereda las funciones de la clase Number
 las cuales se heredan como 'private' */
@@ -265,10 +283,24 @@ public:
     Natural(const Natural &copy);
     Natural(Number<unsigned long long> &Num);
     /*Operadores aritmeticos*/
+    //Operadores con objetos de la misma clase
     Natural operator+(const Natural &Num2);
     Natural operator-(const Natural &Num2);
     Natural operator*(const Natural &Num2);
     Natural &operator=(const Natural &Num2);
+    //Operadores para numeros simpre y cuando pertenezcan al conjunto de los naturales
+    Natural operator+(const long long &Num2);
+    Natural operator-(const long long &Num2);
+    Natural operator*(const long long &Num2);
+    Natural &operator=(const long long &Num2);
+
+    /*Operadores Booleanos*/
+    //Operadores con objetos de la clase
+
+    bool operator==(const Natural &Num2) const;
+    bool operator!=(const Natural &Num2) const;
+    bool operator<(const Natural &Num2) const;
+    bool operator>(const Natural &Num2) const;
 
     ~Natural();
 };
@@ -533,7 +565,7 @@ void Racional::simplify()
     }
     else
     {
-        for (int i = 2; i < this->Numerador.val(); i++)
+        for (int i = 2; i < this->Numerador.val() + 1; i++)
         {
             if (this->Numerador.val() % i == 0)
             {
@@ -555,7 +587,7 @@ void Racional::simplify()
 
 void Racional::print()
 {
-    if (this->Numerador == this->Denominador)
+    if (this->Numerador == this->Denominador || this->Denominador == 1)
     { //Si el numerador y el denominador son el mismo imprimos el numero Entero
         std::cout << this->Numerador.val() << std::endl;
     }
@@ -564,6 +596,7 @@ void Racional::print()
         std::cout << this->Numerador.val() << " / " << this->Denominador.val() << std::endl;
     }
 }
+
 Racional Racional::operator+(const Racional &R2)
 {
     Racional Result;
@@ -627,13 +660,131 @@ Racional::~Racional()
 class Real : public Number<long double>
 {
 private:
+    long double _pot(int k);
+
 public:
-    Real(/* args */);
+    Real(long double Rvalue);
+    Real(const Real &R2);
+    Real(Natural &N);
+    Real(Entero &E);
+    Real(Racional &R);
+    Real();
+
+    long double nroot(int k); //Calcula la raiz n-esima y retorna el resultado
+    void root(int k);         //Calcula la raiz n-esima y asigna el resultado al objeto que se le aplico la funcion
+    void potencia(int k);
+    void print();
+
+    Real operator+(const Real &Num2);
+    Real operator-(const Real &Num2);
+    Real operator*(const Real &Num2);
+    Real operator/(const Real &Num2);
+    Real &operator=(const Real &Num2);
+    Real operator^(const Real &Num2);
+
     ~Real();
 };
 
-Real::Real(/* args */)
+Real::Real(long double Rvalue)
 {
+    this->value = Rvalue;
+}
+Real::Real(const Real &R2)
+{
+    this->value = R2.value;
+}
+/*Real::Real(Natural &N)
+{
+}*/
+Real::Real(Entero &E)
+{
+    this->value = E.val();
+}
+/*Real::Real(Racional &R)
+{
+    this->value = R.
+}*/
+Real::Real()
+{
+    this->value = 0;
+}
+void Real::print()
+{
+    std::cout << this->value << std::endl;
+}
+
+long double Real::_pot(int k)
+{
+    if (k == 0)
+        return 1;
+    else if (k == 1)
+        return this->value;
+    else
+        return this->_pot(k - 1) * this->value;
+}
+
+void Real::potencia(int k)
+{
+    if (k >= 0)
+        this->value = this->_pot(k);
+    else
+        this->value = 1 / this->_pot((unsigned)k);
+}
+
+long double Real::nroot(int k)
+{
+    double exp = 1 / k;
+    long double res = pow(this->value, exp);
+    return res;
+}
+
+void Real::root(int k)
+{
+    this->value = this->nroot(k);
+}
+
+Real Real::operator+(const Real &Num2)
+{
+    Real Result;
+
+    Result.value = this->value + Num2.value;
+
+    return Result;
+}
+
+Real Real::operator-(const Real &Num2)
+{
+    Real Result;
+
+    Result.value = this->value - Num2.value;
+
+    return Result;
+}
+Real Real::operator*(const Real &Num2)
+{
+    Real Result;
+
+    Result.value = this->value * Num2.value;
+
+    return Result;
+}
+Real Real::operator/(const Real &Num2)
+{
+    if (Num2.value == 0) //si se quiere dividir por cero se aroja una excepcion
+        throw std::invalid_argument("Division entre 0\n");
+
+    Real Result;
+
+    Result.value = this->value / Num2.value;
+
+    return Result;
+}
+Real &Real::operator=(const Real &Num2)
+{
+
+    this->value = Num2.value;
+
+    return *this;
 }
 
 Real::~Real()
@@ -642,10 +793,18 @@ Real::~Real()
 
 int main(int argc, char const *argv[])
 {
-    Racional R(4, 16);
+    Real r(64), c;
+    r.print();
+    std::cout << r.nroot(2) << std::endl;
+    r.print();
+
+    /*Racional R(2, 16), B(-4, 9), C;
     R.print();
     R.simplify();
     R.print();
+    B.print();
+    C = R + B;
+    C.print();*/
 
     return 0;
 }
