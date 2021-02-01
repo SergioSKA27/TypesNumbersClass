@@ -1,19 +1,23 @@
 #include <iostream>
+#include <string>
 #include <math.h>
 #include <vector>
 #include <exception>
 
-/*Creamos una clase numero la cual sera la clase base para representar el conjunto 
-total de numeros, dicha clase funciona como un template con la diferencia de que esta
-diseñada para arrojar un error en caso de que el tipo seleccionado no sea del tipo
-numerico(int,long,float,...,etc.), dicha clase contine los operadores aritmeticos y
-booleanos sobrecargados para poder interactuar con otros objetos de la misma clase y
-con datos de tipo numerico.*/
+/*
+Creamos  una clase número la  cual será la clase base  para  representar el  conjunto 
+total de números, dicha clase funciona como un template con la diferencia de que esta
+diseñada para arrojar un error  en  caso de que el tipo seleccionado no sea del  tipo
+numérico (int,long,float,...,etc.), dicha clase contiene los operadores aritméticos y
+booleanos sobrecargados para poder  interactuar con otros objetos de la misma clase y
+con datos de tipo numérico.
+*/
 template <class T>
 class Number
 {
 protected: //el valor solo es accesible en las clases derivadas
     T value;
+    T getvalue();
 
 public: //copia en caso de querer utilizar la clase como un objeto
     T valcopy;
@@ -26,7 +30,7 @@ public:
 
     /*Metodos*/
     Number<T> &setvalue(T new_value); //Cambiar el valor del numero
-    T getvalue();
+
     virtual void print(); // Imprime el valor almacenada
 
     /*Operadores aritmeticos*/
@@ -61,7 +65,7 @@ public:
     bool operator==(const T &val2) const;
     bool operator!=(const T &val2) const;
 
-    ~Number();
+    virtual ~Number();
 };
 /*CONSTRUCTORES*/
 template <class T>
@@ -253,41 +257,30 @@ Number<T>::~Number()
 {
 }
 
-class Numeros
-{
-private:
-    /* data */
-public:
-    Numeros(/* args */);
-    ~Numeros();
-};
-
-Numeros::Numeros(/* args */)
-{
-}
-
-Numeros::~Numeros()
-{
-}
-
 /*NUMEROS NATURALES*/
-/*La clase de los numeros naturales hereda las funciones de la clase Number
-las cuales se heredan como 'private' */
+/*
+La clase de los numeros naturales hereda las funciones de la clase Number
+las cuales  se heredan como 'private' , heredando la clase Number como un 
+Entero(int) sin signo.
+*/
 class Natural : private Number<unsigned long long>
 {
-
 public:
     /*Constructores*/
-    Natural(long long &Num);
-    Natural();
-    Natural(const Natural &copy);
+    Natural(long long Num);       //Constructor por valor
+    Natural();                    //Constructor vacio
+    Natural(const Natural &copy); //Constructor copia
     Natural(Number<unsigned long long> &Num);
+
+    unsigned long long _value() const; //retorna el  valor del objeto
     /*Operadores aritmeticos*/
+
     //Operadores con objetos de la misma clase
     Natural operator+(const Natural &Num2);
     Natural operator-(const Natural &Num2);
     Natural operator*(const Natural &Num2);
     Natural &operator=(const Natural &Num2);
+
     //Operadores para numeros simpre y cuando pertenezcan al conjunto de los naturales
     Natural operator+(const long long &Num2);
     Natural operator-(const long long &Num2);
@@ -296,16 +289,24 @@ public:
 
     /*Operadores Booleanos*/
     //Operadores con objetos de la clase
-
     bool operator==(const Natural &Num2) const;
     bool operator!=(const Natural &Num2) const;
     bool operator<(const Natural &Num2) const;
     bool operator>(const Natural &Num2) const;
+    bool operator<=(const Natural &Num2) const;
+    bool operator>=(const Natural &Num2) const;
 
-    ~Natural();
+    bool operator==(const long long &Num2) const;
+    bool operator!=(const long long &Num2) const;
+    bool operator<(const long long &Num2) const;
+    bool operator>(const long long &Num2) const;
+    bool operator<=(const long long &Num2) const;
+    bool operator>=(const long long &Num2) const;
+
+    virtual ~Natural();
 };
 
-Natural::Natural(long long &Num)
+Natural::Natural(long long Num)
 {
     if (Num < 1) //Si el valor es menor a 1 arrojamos una excepcion
         throw std::invalid_argument("Value need be more greater than zero");
@@ -330,68 +331,196 @@ Natural::Natural(const Natural &copy)
     this->setvalue(copy.value);
 }
 
-Natural Natural::operator+(const Natural &Num2)
+unsigned long long Natural::_value() const
 {
+    return this->value;
+}
+
+Natural Natural::operator+(const Natural &Num2)
+{ //Suma dos numeros naturales y retorna el resultado como un Natural
     Natural Resultado;
     Resultado.value = this->value + Num2.value;
     return Resultado;
 }
 
 Natural Natural::operator-(const Natural &Num2)
-{
+{ //Resta dos numeros naturales y retorna el resultado como un Natural
     Natural Resultado;
     Resultado.value = this->value - Num2.value;
+    //Excepcion en caso de que la resta sea negativa
     return Resultado;
 }
 
 Natural Natural::operator*(const Natural &Num2)
-{
+{ //Multiplicacion dos numeros natures y retorna el resultado como un Natural
     Natural Resultado;
     Resultado.value = this->value * Num2.value;
     return Resultado;
 }
 
 Natural &Natural::operator=(const Natural &Num2)
-{
-
+{ //Asigna el valor de un Natural a otro(o el resultado de alguno de los operadores)
     this->value = Num2.value;
     return *this;
 }
 
+Natural Natural::operator+(const long long &Num2)
+{ //Suma dos numeros naturales y retorna el resultado como un Natural
+
+    if (Num2 < 1) //Si el valor es menor a 1 arrojamos una excepcion
+        throw std::invalid_argument("Value need be more greater than zero");
+    Natural Resultado;
+    Resultado.value = this->value + Num2;
+    return Resultado;
+}
+
+Natural Natural::operator-(const long long &Num2)
+{ //Resta dos numeros naturales y retorna el resultado como un Natural
+
+    if (Num2 < 1) //Si el valor es menor a 1 arrojamos una excepcion
+        throw std::invalid_argument("Value need be more greater than zero");
+    Natural Resultado;
+    Resultado.value = this->value - Num2;
+    //Excepcion en caso de que la resta sea negativa
+    return Resultado;
+}
+
+Natural Natural::operator*(const long long &Num2)
+{ //Multiplicacion dos numeros natures y retorna el resultado como un Natural
+
+    if (Num2 < 1) //Si el valor es menor a 1 arrojamos una excepcion
+        throw std::invalid_argument("Value need be more greater than zero");
+    Natural Resultado;
+    Resultado.value = this->value * Num2;
+    return Resultado;
+}
+
+Natural &Natural::operator=(const long long &Num2)
+{ //Asigna el valor de un Natural a otro(o el resultado de alguno de los operadores)
+
+    if (Num2 < 1) //Si el valor es menor a 1 arrojamos una excepcion
+        throw std::invalid_argument("Value need be more greater than zero");
+    this->value = Num2;
+    return *this;
+}
+
+bool Natural::operator==(const Natural &Num2) const
+{
+    return (this->value == Num2.value);
+}
+
+bool Natural::operator!=(const Natural &Num2) const
+{
+    return (this->value != Num2.value);
+}
+
+bool Natural::operator<(const Natural &Num2) const
+{
+    return (this->value < Num2.value);
+}
+
+bool Natural::operator>(const Natural &Num2) const
+{
+    return (this->value > Num2.value);
+}
+
+bool Natural::operator<=(const Natural &Num2) const
+{
+    return (this->value <= Num2.value);
+}
+
+bool Natural::operator>=(const Natural &Num2) const
+{
+    return (this->value >= Num2.value);
+}
+
+bool Natural::operator==(const long long &Num2) const
+{
+    return (this->value == Num2);
+}
+
+bool Natural::operator!=(const long long &Num2) const
+{
+    return (this->value != Num2);
+}
+
+bool Natural::operator<(const long long &Num2) const
+{
+    return (this->value < Num2);
+}
+
+bool Natural::operator>(const long long &Num2) const
+{
+    return (this->value > Num2);
+}
+
+bool Natural::operator<=(const long long &Num2) const
+{
+    return (this->value <= Num2);
+}
+
+bool Natural::operator>=(const long long &Num2) const
+{
+    return (this->value >= Num2);
+}
+
 Natural::~Natural() {}
 
-class Entero : private Number<long long>
+/*NUMEROS ENTEROS*/
+
+/*
+La clase entero de igual forma hereda como private las funciones de la clase
+Number esta vez con un valor entero.
+*/
+class Entero : public Number<long long>
 {
 
 public:
-    Entero(long long Value);
-    Entero(const Entero &Num2);
+    Entero(long long Value);    //Constructor por valor
+    Entero(const Entero &Num2); //Constructor copia
     Entero(Number<long long> &Num2);
-    Entero();
+    Entero(); //Constructor vacio
 
-    int val(); //retorna el valor del Entero como un int
+    int val();
 
-    Entero operator+(const Entero &Num2);
-    Entero operator-(const Entero &Num2);
-    Entero operator*(const Entero &Num2);
-    Entero &operator=(const Entero &Num2);
+    Entero operator+(const Entero &Num2);  //Suma dos enteros y retorna el resultado como un Entero
+    Entero operator-(const Entero &Num2);  //Resta dos enteros y retorna el resultado como un Entero
+    Entero operator*(const Entero &Num2);  //Multiplica dos enteros y retorna el resultado como un Entero
+    Entero &operator=(const Entero &Num2); //Asigna el valor de un Entero a otro( o el resultado de alguna operacion )
 
-    Entero operator+(const long long &Num2);
-    Entero operator-(const long long &Num2);
-    Entero operator*(const long long &Num2);
-    Entero &operator=(const long long &Num2);
+    Entero operator+(const Natural &Num2);  //Suma un entero y un natural y retorna el resultado como un Entero
+    Entero operator-(const Natural &Num2);  //Resta un entero y un natural y retorna el resultado como un Entero
+    Entero operator*(const Natural &Num2);  //Multiplica un entero y un natural y retorna el resultado como un Entero
+    Entero &operator=(const Natural &Num2); //Asigna el valor de un Natural a un entero( o el resultado de alguna operacion )
 
+    Entero operator+(const long long &Num2);  //Suma un entero y un numero(int) y retorna el resultado como un Entero
+    Entero operator-(const long long &Num2);  //Resta un entero y un numero(int) y retorna el resultado como un Entero
+    Entero operator*(const long long &Num2);  //Multiplicacion un entero y un numero(int) y retorna el resultado como un Entero
+    Entero &operator=(const long long &Num2); //Asigna el valor de un numero(int) a un entero
+
+    /*Operadores Booleanos Con objetos de la clase*/
     bool operator!=(const Entero &Num2) const;
     bool operator==(const Entero &Num2) const;
     bool operator<(const Entero &Num2) const;
     bool operator>(const Entero &Num2) const;
+    bool operator<=(const Entero &Num2) const;
+    bool operator>=(const Entero &Num2) const;
 
-    bool operator!=(const int &Num2) const;
-    bool operator==(const int &Num2) const;
-    bool operator<(const int &Num2) const;
-    bool operator>(const int &Num2) const;
+    bool operator!=(const Natural &Num2) const;
+    bool operator==(const Natural &Num2) const;
+    bool operator<(const Natural &Num2) const;
+    bool operator>(const Natural &Num2) const;
+    bool operator<=(const Natural &Num2) const;
+    bool operator>=(const Natural &Num2) const;
+    /*Operadores Booleanos Con numeros(int) */
+    bool operator!=(const long long &Num2) const;
+    bool operator==(const long long &Num2) const;
+    bool operator<(const long long &Num2) const;
+    bool operator>(const long long &Num2) const;
+    bool operator<=(const long long &Num2) const;
+    bool operator>=(const long long &Num2) const;
 
-    ~Entero();
+    virtual ~Entero();
 };
 
 Entero::Entero(long long Value)
@@ -419,7 +548,6 @@ int Entero::val()
 Entero Entero::operator+(const Entero &Num2)
 {
     Entero Result;
-
     Result.value = this->value + Num2.value;
     return Result;
 }
@@ -439,9 +567,32 @@ Entero Entero::operator*(const Entero &Num2)
 }
 Entero &Entero::operator=(const Entero &Num2)
 {
+    this->value = Num2.value;
+    return *this;
+}
+
+Entero Entero::operator+(const Natural &Num2)
+{
+    Entero Result;
+    Result.value = this->value + Num2._value();
+    return Result;
+}
+Entero Entero::operator-(const Natural &Num2)
+{
     Entero Result;
 
-    this->value = Num2.value;
+    Result.value = this->value - Num2._value();
+    return Result;
+}
+Entero Entero::operator*(const Natural &Num2)
+{
+    Entero Result;
+    Result.value = this->value * Num2._value();
+    return Result;
+}
+Entero &Entero::operator=(const Natural &Num2)
+{
+    this->value = Num2._value();
     return *this;
 }
 
@@ -468,8 +619,6 @@ Entero Entero::operator*(const long long &Num2)
 }
 Entero &Entero::operator=(const long long &Num2)
 {
-    Entero Result;
-
     this->value = Num2;
     return *this;
 }
@@ -490,22 +639,63 @@ bool Entero::operator>(const Entero &Num2) const
 {
     return (this->value > Num2.value);
 }
+bool Entero::operator<=(const Entero &Num2) const
+{
+    return (this->value <= Num2.value);
+}
+bool Entero::operator>=(const Entero &Num2) const
+{
+    return (this->value >= Num2.value);
+}
 
-bool Entero::operator==(const int &Num2) const
+bool Entero::operator==(const Natural &Num2) const
+{
+    return (this->value == Num2._value());
+}
+bool Entero::operator!=(const Natural &Num2) const
+{
+    return (this->value != Num2._value());
+}
+bool Entero::operator<(const Natural &Num2) const
+{
+    return (this->value < Num2._value());
+}
+bool Entero::operator>(const Natural &Num2) const
+{
+    return (this->value > Num2._value());
+}
+bool Entero::operator<=(const Natural &Num2) const
+{
+    return (this->value <= Num2._value());
+}
+bool Entero::operator>=(const Natural &Num2) const
+{
+    return (this->value >= Num2._value());
+}
+
+bool Entero::operator==(const long long &Num2) const
 {
     return (this->value == Num2);
 }
-bool Entero::operator!=(const int &Num2) const
+bool Entero::operator!=(const long long &Num2) const
 {
     return (this->value != Num2);
 }
-bool Entero::operator<(const int &Num2) const
+bool Entero::operator<(const long long &Num2) const
 {
     return (this->value < Num2);
 }
-bool Entero::operator>(const int &Num2) const
+bool Entero::operator>(const long long &Num2) const
 {
     return (this->value > Num2);
+}
+bool Entero::operator<=(const long long &Num2) const
+{
+    return (this->value <= Num2);
+}
+bool Entero::operator>=(const long long &Num2) const
+{
+    return (this->value >= Num2);
 }
 
 Entero::~Entero()
@@ -531,7 +721,7 @@ public:
     Racional operator*(const Racional &R2);
     Racional &operator=(const Racional &R2);
 
-    ~Racional();
+    virtual ~Racional();
 };
 
 Racional::Racional(long long Num, long long Den)
@@ -588,7 +778,7 @@ void Racional::simplify()
 void Racional::print()
 {
     if (this->Numerador == this->Denominador || this->Denominador == 1)
-    { //Si el numerador y el denominador son el mismo imprimos el numero Entero
+    { //Si el numerador y el denominador son el mismo o el denominador es igual a uno imprimos el numero Entero
         std::cout << this->Numerador.val() << std::endl;
     }
     else
@@ -682,7 +872,25 @@ public:
     Real &operator=(const Real &Num2);
     Real operator^(const Real &Num2);
 
-    ~Real();
+    Real operator+(const Natural &Num2);
+    Real operator-(const Natural &Num2);
+    Real operator*(const Natural &Num2);
+    Real operator/(const Natural &Num2);
+    Real &operator=(const Natural &Num2);
+
+    Real operator+(const Entero &Num2);
+    Real operator-(const Entero &Num2);
+    Real operator*(const Entero &Num2);
+    Real operator/(const Entero &Num2);
+    Real &operator=(const Entero &Num2);
+
+    Real operator+(const Racional &Num2);
+    Real operator-(const Racional &Num2);
+    Real operator*(const Racional &Num2);
+    Real operator/(const Racional &Num2);
+    Real &operator=(const Racional &Num2);
+
+    virtual ~Real();
 };
 
 Real::Real(long double Rvalue)
@@ -734,7 +942,7 @@ void Real::potencia(int k)
 long double Real::nroot(int k)
 {
     double exp = 1 / k;
-    long double res = pow(this->value, exp);
+    long double res = std::pow(this->value, exp);
     return res;
 }
 
@@ -791,13 +999,97 @@ Real::~Real()
 {
 }
 
+/*
+La clase complejo herda la clase Number como  long double y almacena 
+la parte real el el valor heredado.
+*/
+class Complejo : public Number<long double>
+{
+private:
+    long long value_I;
+
+public:
+    Complejo(long double Real, long long Imaginary);
+    Complejo(const Complejo &B);
+    Complejo();
+
+    Complejo conjugado();
+
+    Complejo operator+(const Complejo &Num2);
+    Complejo operator-(const Complejo &Num2);
+    Complejo operator*(const Complejo &Num2);
+    Complejo operator/(const Complejo &Num2);
+    Complejo &operator=(const Complejo &Num2);
+
+    virtual ~Complejo();
+};
+
+Complejo::Complejo(long double Real, long long Imaginary)
+{
+    this->value = Real;
+    this->value_I = Imaginary;
+}
+Complejo::Complejo(const Complejo &B)
+{
+    this->value = B.value;
+    this->value_I = B.value_I;
+}
+Complejo::Complejo()
+{
+}
+
+Complejo::~Complejo()
+{
+}
+
+template <class type>
+class Matriz
+{
+private:
+    type **Mat;
+    int filas;
+    int columnas;
+
+public:
+    Matriz(int filas, int columnas);
+    Matriz();
+
+    ~Matriz();
+};
+
+template <class type>
+Matriz<type>::Matriz(int filas, int columnas)
+{
+    this->Mat = new type *[filas];
+
+    for (int i = 0; i < filas; i++)
+    {
+        this->Mat[i] = new type[columnas];
+    }
+    this->filas = filas;
+    this->columnas = columnas;
+}
+
+template <class type>
+Matriz<type>::Matriz()
+{
+    this->Mat = NULL;
+    this->filas = 0;
+    this->columnas = 0;
+}
+
+template <class type>
+Matriz<type>::~Matriz()
+{
+}
+
 int main(int argc, char const *argv[])
 {
-    Real r(64), c;
-    r.print();
-    std::cout << r.nroot(2) << std::endl;
-    r.print();
+    Natural a(10);
+    Entero B(4), c;
 
+    c = B + a;
+    c.print();
     /*Racional R(2, 16), B(-4, 9), C;
     R.print();
     R.simplify();
