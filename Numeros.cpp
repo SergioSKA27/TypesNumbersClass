@@ -481,6 +481,7 @@ public:
     Entero(Number<long long> &Num2);
     Entero(); //Constructor vacio
 
+    long long _value() const;
     int val();
 
     Entero operator+(const Entero &Num2);  //Suma dos enteros y retorna el resultado como un Entero
@@ -538,6 +539,11 @@ Entero::Entero(Number<long long> &Num2)
 Entero::Entero()
 {
     this->value = 0;
+}
+
+long long Entero::_value() const
+{
+    return this->value;
 }
 
 int Entero::val()
@@ -721,6 +727,49 @@ public:
     Racional operator*(const Racional &R2);
     Racional &operator=(const Racional &R2);
 
+    Racional operator+(const Entero &R2);
+    Racional operator-(const Entero &R2);
+    Racional operator*(const Entero &R2);
+    Racional &operator=(const Entero &R2);
+
+    Racional operator+(const Natural &R2);
+    Racional operator-(const Natural &R2);
+    Racional operator*(const Natural &R2);
+    Racional &operator=(const Natural &R2);
+
+    Racional operator+(const long long &R2);
+    Racional operator-(const long long &R2);
+    Racional operator*(const long long &R2);
+    Racional &operator=(const long long &R2);
+
+    bool operator==(const Racional &R2) const;
+    bool operator!=(const Racional &R2) const;
+    bool operator<(const Racional &R2) const;
+    bool operator>(const Racional &R2) const;
+    bool operator<=(const Racional &R2) const;
+    bool operator>=(const Racional &R2) const;
+
+    bool operator==(const Entero &R2) const;
+    bool operator!=(const Entero &R2) const;
+    bool operator<(const Entero &R2) const;
+    bool operator>(const Entero &R2) const;
+    bool operator<=(const Entero &R2) const;
+    bool operator>=(const Entero &R2) const;
+
+    bool operator==(const Natural &R2) const;
+    bool operator!=(const Natural &R2) const;
+    bool operator<(const Natural &R2) const;
+    bool operator>(const Natural &R2) const;
+    bool operator<=(const Natural &R2) const;
+    bool operator>=(const Natural &R2) const;
+
+    bool operator==(const long long &R2) const;
+    bool operator!=(const long long &R2) const;
+    bool operator<(const long long &R2) const;
+    bool operator>(const long long &R2) const;
+    bool operator<=(const long long &R2) const;
+    bool operator>=(const long long &R2) const;
+
     virtual ~Racional();
 };
 
@@ -805,7 +854,6 @@ Racional Racional::operator+(const Racional &R2)
 
     return Result; //retornamos el resultado simplificado
 }
-
 Racional Racional::operator-(const Racional &R2)
 {
     Racional Result;
@@ -824,7 +872,6 @@ Racional Racional::operator-(const Racional &R2)
 
     return Result; //retornamos el resultado simplificado
 }
-
 Racional Racional::operator*(const Racional &R2)
 {
     Racional Result;
@@ -835,12 +882,150 @@ Racional Racional::operator*(const Racional &R2)
 
     return Result; //retornamos el resultado simplificado
 }
-
 Racional &Racional::operator=(const Racional &R2)
 {
     this->Numerador = R2.Numerador;
     this->Denominador = R2.Denominador;
     return *this;
+}
+
+Racional Racional::operator+(const Entero &R2)
+{
+    Racional Result;
+
+    Result.Numerador = (this->Numerador * (R2._value() / R2._value())) + (this->Denominador * R2._value());
+    Result.Denominador = this->Denominador * (R2._value() / R2._value());
+
+    Result.simplify(); //simplificamos el resultado
+
+    return Result; //retornamos el resultado simplificado
+}
+Racional Racional::operator-(const Entero &R2)
+{
+    Racional Result;
+
+    Result.Numerador = (this->Numerador * (R2._value() / R2._value())) - (this->Denominador * R2._value());
+    Result.Denominador = this->Denominador * (R2._value() / R2._value());
+    Result.simplify(); //simplificamos el resultado
+
+    return Result; //retornamos el resultado simplificado
+}
+Racional Racional::operator*(const Entero &R2)
+{
+    Racional Result;
+
+    Result.Numerador = this->Numerador * R2._value();
+    Result.Denominador = this->Denominador * (R2._value() / R2._value());
+    Result.simplify(); //simplificamos el resultado
+
+    return Result; //retornamos el resultado simplificado
+}
+Racional &Racional::operator=(const Entero &R2)
+{
+    this->Numerador = R2._value();
+    this->Denominador = (R2._value() / R2._value());
+    return *this;
+}
+
+Racional Racional::operator+(const Natural &R2)
+{
+    Racional Result;
+
+    Result.Numerador = (this->Numerador * (R2._value() / R2._value())) + (this->Denominador * R2._value());
+    Result.Denominador = this->Denominador * (R2._value() / R2._value());
+
+    Result.simplify(); //simplificamos el resultado
+
+    return Result; //retornamos el resultado simplificado
+}
+Racional Racional::operator-(const Natural &R2)
+{
+    Racional Result;
+
+    Result.Numerador = (this->Numerador * (R2._value() / R2._value())) - (this->Denominador * R2._value());
+    Result.Denominador = this->Denominador * (R2._value() / R2._value());
+    Result.simplify(); //simplificamos el resultado
+
+    return Result; //retornamos el resultado simplificado
+}
+Racional Racional::operator*(const Natural &R2)
+{
+    Racional Result;
+
+    Result.Numerador = this->Numerador * R2._value();
+    Result.Denominador = this->Denominador * (R2._value() / R2._value());
+    Result.simplify(); //simplificamos el resultado
+
+    return Result; //retornamos el resultado simplificado
+}
+Racional &Racional::operator=(const Natural &R2)
+{
+    this->Numerador = R2._value();
+    this->Denominador = (R2._value() / R2._value());
+    return *this;
+}
+
+Racional Racional::operator+(const long long &R2)
+{
+    Racional Result;
+
+    Result.Numerador = (this->Numerador * (R2 / R2)) + (this->Denominador * R2);
+    Result.Denominador = this->Denominador * (R2 / R2);
+
+    Result.simplify(); //simplificamos el resultado
+
+    return Result; //retornamos el resultado simplificado
+}
+Racional Racional::operator-(const long long &R2)
+{
+    Racional Result;
+
+    Result.Numerador = (this->Numerador * (R2 / R2)) - (this->Denominador * R2);
+    Result.Denominador = this->Denominador * (R2 / R2);
+    Result.simplify(); //simplificamos el resultado
+
+    return Result; //retornamos el resultado simplificado
+}
+Racional Racional::operator*(const long long &R2)
+{
+    Racional Result;
+
+    Result.Numerador = this->Numerador * R2;
+    Result.Denominador = this->Denominador * (R2 / R2);
+    Result.simplify(); //simplificamos el resultado
+
+    return Result; //retornamos el resultado simplificado
+}
+Racional &Racional::operator=(const long long &R2)
+{
+    this->Numerador = R2;
+    this->Denominador = (R2 / R2);
+    return *this;
+}
+
+bool Racional::operator==(const Racional &R2) const
+{
+    return (this->Denominador == R2.Denominador && this->Numerador == R2.Numerador);
+}
+bool Racional::operator!=(const Racional &R2) const
+{
+    return (this->Denominador != R2.Denominador && this->Numerador != R2.Numerador);
+}
+bool Racional::operator<(const Racional &R2) const
+{
+    return (this->Numerador._value() / this->Denominador._value() < R2.Numerador._value() / R2.Denominador._value());
+}
+bool Racional::operator>(const Racional &R2) const
+{
+    return (this->Numerador._value() / this->Denominador._value() > R2.Numerador._value() / R2.Denominador._value());
+}
+bool Racional::operator<=(const Racional &R2) const
+{
+    return (this->Numerador._value() / this->Denominador._value() <= R2.Numerador._value() / R2.Denominador._value());
+}
+bool Racional::operator>=(const Racional &R2) const
+{
+    return (this->Numerador._value() / this->Denominador._value() >= R2.Numerador._value() / R2.Denominador._value());
 }
 
 Racional::~Racional()
@@ -1003,7 +1188,7 @@ Real::~Real()
 La clase complejo herda la clase Number como  long double y almacena 
 la parte real el el valor heredado.
 */
-class Complejo : public Number<long double>
+/*class Complejo : public Number<long double>
 {
 private:
     long long value_I;
@@ -1014,6 +1199,7 @@ public:
     Complejo();
 
     Complejo conjugado();
+    void print();
 
     Complejo operator+(const Complejo &Num2);
     Complejo operator-(const Complejo &Num2);
@@ -1038,10 +1224,38 @@ Complejo::Complejo()
 {
 }
 
+Complejo Complejo::conjugado()
+{
+    Complejo C;
+    C.value = this->value;
+    C.value_I = -(this->value_I);
+    return C;
+}
+
+Complejo Complejo::operator+(const Complejo &Num2)
+{
+    Complejo result;
+
+    result.value = this->value + Num2.value;
+    result.value_I = this->value_I + Num2.value_I;
+
+    return result;
+}
+
+Complejo Complejo::operator-(const Complejo &Num2)
+{
+    Complejo result;
+
+    result.value = this->value - Num2.value;
+    result.value_I = this->value_I - Num2.value_I;
+
+    return result;
+}
+
 Complejo::~Complejo()
 {
 }
-
+*/
 template <class type>
 class Matriz
 {
