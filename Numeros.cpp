@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <math.h>
 #include <vector>
 #include <exception>
@@ -521,6 +522,17 @@ public:
     bool operator<=(const long long &Num2) const;
     bool operator>=(const long long &Num2) const;
 
+    void operator delete(void *p)
+    {
+        free(p);
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const Entero &Num)
+    {
+        os << Num.value;
+        return os;
+    }
+
     virtual ~Entero();
 };
 
@@ -1032,6 +1044,70 @@ Racional::~Racional()
 {
 }
 
+class Irracional : private Number<long double>
+{
+private:
+    char num; //para imprir el caracter
+    std::string N;
+
+public:
+    Irracional(std::string nombre);
+    Irracional(const Irracional &I2);
+    Irracional();
+
+    void print();
+    ~Irracional();
+};
+
+Irracional::Irracional(std::string nombre)
+{
+
+    std::for_each(nombre.begin(), nombre.end(), [](char &c) { c = std::tolower(c); });
+
+    this->N = nombre;
+
+    if (N == "pi" || N == "p")
+    {
+        this->num = 227;
+        this->value = M_PI;
+    }
+    else if (N == "e")
+    {
+        this->num = 'e';
+        this->value = M_E;
+    }
+    else if (N == "sr2" || N == "s2" || N == "r2" || N == "sqrt2")
+    {
+        this->value = M_SQRT2;
+        this->num = 201;
+    }
+    else if (N == "phi")
+    {
+        this->num = 232;
+        this->value = 1.61803398874989;
+    }
+}
+Irracional::Irracional(const Irracional &I2)
+{
+    this->N = I2.N;
+    this->num = I2.num;
+    this->value = I2.value;
+}
+Irracional::Irracional()
+{ //Si no se inicializa el constructor el numero por default es PI
+    this->num = 227;
+    this->value = M_PI;
+}
+
+void Irracional::print()
+{
+    std::cout << this->num << std::endl;
+}
+
+Irracional::~Irracional()
+{
+}
+
 class Real : public Number<long double>
 {
 private:
@@ -1264,9 +1340,31 @@ private:
     int filas;
     int columnas;
 
+    long long Det(type **Mat, int sz);
+
+    inline Matriz<type> ExtractMat(type **Mat, int sz, int F, int C);
+
+    type brackethelp(type *fila, int col); //funcion de ayuda para el operador corche
+    int brcketaux, bracketaux2;
+
 public:
-    Matriz(int filas, int columnas);
-    Matriz();
+    Matriz(const type init, int filas, int columnas); //Para cualquier Matriz inicializada
+    Matriz(int filas, int columnas);                  //Para cualquier Matriz
+    Matriz(int size);                                 //Para Matrices cuadradas
+    Matriz();                                         //Constructor vacio
+
+    Matriz &resize(int filas, int columnas); //Redimensionar Matriz sin perder los datos
+
+    void print();
+
+    Matriz<type> operator+(const Matriz<type> &Mat2);
+    Matriz<type> operator-(const Matriz<type> &Mat2);
+    Matriz<type> operator*(const Matriz<type> &Mat2);
+    Matriz<type> &operator=(const Matriz<type> &Mat2);
+
+    type *operator[](const int index);
+    type operator[](short int index2);
+    Matriz<type> &operator=(const type Data); //Para asignar valor a las caillas de la matriz
 
     ~Matriz();
 };
@@ -1285,6 +1383,41 @@ Matriz<type>::Matriz(int filas, int columnas)
 }
 
 template <class type>
+Matriz<type>::Matriz(int size)
+{
+    this->Mat = new type *[size];
+
+    for (int i = 0; i < size; i++)
+    {
+        this->Mat[i] = new type[size];
+    }
+    this->filas = size;
+    this->columnas = size;
+}
+
+template <class type>
+Matriz<type>::Matriz(const type init, int filas, int columnas)
+{
+    this->Mat = new type *[filas];
+
+    for (int i = 0; i < filas; i++)
+    {
+        this->Mat[i] = new type[columnas];
+    }
+
+    for (int i = 0; i < filas; i++)
+    {
+        for (int j = 0; j < columnas; j++)
+        {
+            this->Mat[i][j] = init;
+        }
+    }
+
+    this->filas = filas;
+    this->columnas = columnas;
+}
+
+template <class type>
 Matriz<type>::Matriz()
 {
     this->Mat = NULL;
@@ -1293,17 +1426,219 @@ Matriz<type>::Matriz()
 }
 
 template <class type>
+Matriz<type> &Matriz<type>::resize(int filas, int columnas)
+{
+    type **newMat;
+
+    newMat = new type *[filas];
+
+    for (int i = 0; i < filas; i++)
+    {
+        newMat[i] = new type[columnas];
+    }
+
+    for (int i = 0; i < this->filas; i++)
+    {
+        for (int j = 0; j < this->columnas; j++)
+        {
+            if (i < this->filas && j < this->columnas)
+                newMat[i][j] = this->Mat[i][j];
+        }
+    }
+
+    this->Mat = newMat;
+    this->filas = filas;
+    this->columnas = columnas;
+
+    return *this;
+}
+
+template <class type>
+inline Matriz<type> Matriz<type>::ExtractMat(type **Mat, int sz, int F, int C)
+{
+    Matriz<type> result(sz - 1, sz - 1);
+    int k = 0, l = 0;
+
+    for (int i = 0; i < sz; i++)
+    {
+        for (int j = 0; j < sz; j++)
+        {
+            if (i != F && j != C)
+            { //Si no estamos en la fila y la columna que se van a eliminar asignamos
+                //el valor en esa posicion al valor k,l de la matriz resultado
+                result.Mat[k][l] = Mat[i][j];
+                l++; //iteramos las columnas de la matriz resultado
+            }
+        }
+        if (i != F) //si no estamos en la fila que se va a eliminar iteramos k
+            k++;    //iteramos las filas de la matriz resultado
+    }
+
+    return result;
+}
+
+template <class type>
+long long Matriz<type>::Det(type **Mat, int sz)
+{
+    return 1;
+}
+
+template <class type>
+void Matriz<type>::print()
+{
+    if (Mat == NULL)
+        throw std::invalid_argument("La Matriz est de tamano 0\n");
+
+    for (int i = 0; i < this->filas; i++)
+    {
+        for (int j = 0; j < this->columnas; j++)
+        {
+            std::cout << this->Mat[i][j] << "\t";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+template <class type>
+Matriz<type> Matriz<type>::operator+(const Matriz<type> &Mat2)
+{
+    if (this->filas != Mat2.filas || this->columnas != Mat2.columnas)
+        throw std::invalid_argument("Las Matrices no tienen el mismo tamano\n");
+    Matriz<type> Result(this->filas, this->columnas);
+
+    for (int i = 0; i < this->filas; i++)
+    {
+        for (int j = 0; j < this->columnas; j++)
+        {
+            Result.Mat[i][j] = this->Mat[i][j] + Mat2.Mat[i][j];
+        }
+    }
+
+    return Result;
+}
+
+template <class type>
+Matriz<type> Matriz<type>::operator-(const Matriz<type> &Mat2)
+{
+    if (this->filas != Mat2.filas || this->columnas != Mat2.columnas)
+        throw std::invalid_argument("Las Matrices no tienen el mismo tamano\n");
+    Matriz<type> Result(this->filas, this->columnas);
+
+    for (int i = 0; i < this->filas; i++)
+    {
+        for (int j = 0; j < this->columnas; j++)
+        {
+            Result.Mat[i][j] = this->Mat[i][j] - Mat2.Mat[i][j];
+        }
+    }
+
+    return Result;
+}
+
+template <class type>
+Matriz<type> Matriz<type>::operator*(const Matriz<type> &Mat2)
+{
+    if (this->filas != Mat2.columnas)
+        throw std::invalid_argument("Las Matrices no se pueden multiplicar\n");
+    Matriz<type> Result(this->filas, Mat2.columnas);
+
+    type sum = 0; //si se planea usar objetos estos tienen que tener un 0 y sobrecargar el operador = para poder asignarlo
+
+    for (int i = 0; i < this->filas; i++)
+    {
+        sum = 0;
+        for (int j = 0; j < Mat2.columnas; j++)
+        {
+            for (int k = 0; k < Mat2.columnas; k++)
+            {
+                sum = sum + (this->Mat[i][k] * Mat2.Mat[k][j]);
+                Result.Mat[k][j] = sum;
+            }
+        }
+    }
+
+    return Result;
+}
+
+template <class type>
+Matriz<type> &Matriz<type>::operator=(const Matriz<type> &Mat2)
+{
+    if (this->filas != Mat2.filas || this->columnas != Mat2.columnas)
+        this->resize(Mat2.filas, Mat2.columnas);
+
+    for (int i = 0; i < this->filas; i++)
+    {
+        for (int j = 0; j < this->columnas; j++)
+        {
+            this->Mat[i][j] = Mat2.Mat[i][j];
+        }
+    }
+
+    return *this;
+}
+
+template <class type>
+type Matriz<type>::brackethelp(type *fila, int col)
+{
+    return fila[col];
+}
+
+template <class type>
+type *Matriz<type>::operator[](const int index)
+{
+    if (index >= this->filas)
+        throw std::out_of_range("Fuera del rango de la matriz\n");
+    this->brcketaux = index;
+    return this->Mat[index];
+}
+
+template <class type>
+type Matriz<type>::operator[](short int index2)
+{
+    if (index2 >= this->columnas)
+        throw std::out_of_range("Fuera del rango de la matriz\n");
+
+    this->bracketaux2 = index2;
+    return (this->brackethelp((*this)[this->brcketaux], index2));
+}
+template <class type>
+Matriz<type> &Matriz<type>::operator=(const type Data)
+{
+    this->Mat[brcketaux][bracketaux2] = Data;
+    return *this;
+}
+
+template <class type>
 Matriz<type>::~Matriz()
 {
+    if (sizeof(type) == sizeof(Entero) || sizeof(type) == sizeof(Racional) || sizeof(type) == sizeof(Natural) ||
+        sizeof(type) == sizeof(Racional) || sizeof(type) == sizeof(Irracional) || sizeof(type) == sizeof(Real))
+    {
+    }
+    else
+    {
+
+        for (int i = 0; i < this->filas; i++)
+        {
+            delete this->Mat[i];
+        }
+        delete this->Mat;
+    }
 }
 
 int main(int argc, char const *argv[])
 {
-    Natural a(10);
-    Entero B(4), c;
+    Matriz<int> A(10, 2, 3), B(2, 3, 2), C(2, 2);
+    A[0][0] = 5;
+    A.print();
+    B[0][0] = 1;
+    B.print();
+    C = A * B;
 
-    c = B + a;
-    c.print();
+    C.print();
+
+    std::cout << C[0][0] << std::endl;
     /*Racional R(2, 16), B(-4, 9), C;
     R.print();
     R.simplify();
