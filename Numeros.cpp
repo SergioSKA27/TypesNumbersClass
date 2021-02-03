@@ -2,6 +2,8 @@
 #include <string>
 #include <algorithm>
 #include <math.h>
+#include <stdlib.h>
+#include <time.h>
 #include <vector>
 #include <exception>
 
@@ -1340,12 +1342,11 @@ private:
     int filas;
     int columnas;
 
-    long long Det(type **Mat, int sz);
-
     inline Matriz<type> ExtractMat(type **Mat, int sz, int F, int C);
+    type Det(type **Mat, int sz); //Calcula el determinante por cofactores
 
     type brackethelp(type *fila, int col); //funcion de ayuda para el operador corche
-    int brcketaux, bracketaux2;
+    int brcketaux, bracketaux2;            //variables auxiliares para indices en corchetes
 
 public:
     Matriz(const type init, int filas, int columnas); //Para cualquier Matriz inicializada
@@ -1355,16 +1356,23 @@ public:
 
     Matriz &resize(int filas, int columnas); //Redimensionar Matriz sin perder los datos
 
-    void print();
+    void print(); //Imprimir la matriz
 
-    Matriz<type> operator+(const Matriz<type> &Mat2);
-    Matriz<type> operator-(const Matriz<type> &Mat2);
-    Matriz<type> operator*(const Matriz<type> &Mat2);
-    Matriz<type> &operator=(const Matriz<type> &Mat2);
+    type Determinante(); //Devuelve el determinante de la matriz
 
-    type *operator[](const int index);
-    type operator[](short int index2);
-    Matriz<type> &operator=(const type Data); //Para asignar valor a las caillas de la matriz
+    Matriz<type> transp(); //Devuelve la transpuesta de la matriz
+    Matriz<type> adj();    //devuelve la adjunta de la matriz
+
+    Matriz<type> inversa(); //Retorna la inversa de una matriz (mediante la ajunta de la matriz)
+
+    Matriz<type> operator+(const Matriz<type> &Mat2);  //Suma de matrices
+    Matriz<type> operator-(const Matriz<type> &Mat2);  //Resta de matrices
+    Matriz<type> operator*(const Matriz<type> &Mat2);  //Multiplicacion de matrices
+    Matriz<type> &operator=(const Matriz<type> &Mat2); //Operador de asignacion
+
+    type *operator[](const int index);        //Operador corchete para filas
+    type operator[](short int index2);        //Operador corchete para columnas
+    Matriz<type> &operator=(const type Data); //Para asignar valor a las casillas de la matriz
 
     ~Matriz();
 };
@@ -1461,6 +1469,7 @@ inline Matriz<type> Matriz<type>::ExtractMat(type **Mat, int sz, int F, int C)
 
     for (int i = 0; i < sz; i++)
     {
+        l = 0;
         for (int j = 0; j < sz; j++)
         {
             if (i != F && j != C)
@@ -1478,9 +1487,121 @@ inline Matriz<type> Matriz<type>::ExtractMat(type **Mat, int sz, int F, int C)
 }
 
 template <class type>
-long long Matriz<type>::Det(type **Mat, int sz)
+type Matriz<type>::Det(type **Mat, int sz)
 {
-    return 1;
+    Matriz<type> res(sz - 1, sz - 1);
+    type detval = 0;
+
+    type dt;
+
+    if (sz == 2)
+    {
+        detval = ((Mat[0][0] * Mat[1][1]) - (Mat[0][1] * Mat[1][0]));
+        //std::cout << "Det 2: " << detval << std::endl;//Para ver como funciona el algoritmo quita el comentario
+        return detval;
+    }
+    else
+    {
+        for (int i = 0; i < sz; i++)
+        {
+            res = this->ExtractMat(Mat, sz, 0, i);
+            //res.print();                                //Para ver como funciona el algoritmo quita el comentario
+            //std::cout << "*" << Mat[i][0] << std::endl; //Para ver como funciona el algoritmo quita el comentario
+
+            dt = this->Det(res.Mat, sz - 1);
+
+            if (i % 2 == 0)
+            {
+                detval += Mat[i][0] * dt;
+            }
+            else
+            {
+                detval += -(Mat[i][0] * dt);
+            }
+
+            //std::cout << "Det val: " << detval << std::endl; //Para ver como funciona el algoritmo quita el comentario
+        }
+        return detval;
+    }
+}
+
+template <class type>
+type Matriz<type>::Determinante()
+{
+    if (this->filas != this->columnas)
+        throw std::invalid_argument("La matriz no es cuadrada");
+    return this->Det(this->Mat, this->filas);
+}
+
+template <class type>
+Matriz<type> Matriz<type>::transp()
+{
+    Matriz<type> T(this->columnas, this->filas);
+
+    for (int i = 0; i < this->columnas; i++)
+    {
+        for (int j = 0; j < this->filas; j++)
+        {
+            T.Mat[i][j] = this->Mat[j][i];
+        }
+    }
+
+    return T;
+}
+
+template <class type>
+Matriz<type> Matriz<type>::adj()
+{
+    Matriz<type> AD(this->filas, this->columnas);
+    Matriz<type> aux(this->filas - 1, this->columnas - 1);
+
+    for (int i = 0; i < this->columnas; i++)
+    {
+
+        for (int j = 0; j < this->filas; j++)
+        {
+            aux = this->ExtractMat(this->Mat, this->filas, i, j);
+            aux.print();
+            if (((i + 1) + (j + 1)) % 2 == 0)
+            {
+                AD.Mat[i][j] = aux.Determinante();
+            }
+            else
+            {
+                AD.Mat[i][j] = -(aux.Determinante());
+            }
+        }
+    }
+
+    return AD;
+}
+
+template <class type>
+Matriz<type> Matriz<type>::inversa()
+{ /*Calculamos la inversa sabiendo que la inversa de una matriz A es:
+            trans(adj(A))
+    inv(A)= -------------
+                |A|
+    Donde |A| representa el determiante de la matriz.
+*/
+
+    Matriz<type> Inv, aux;
+
+    type det = this->Determinante();
+
+    aux = this->adj();
+
+    Inv = aux.transp();
+
+    for (int i = 0; i < Inv.filas; i++)
+    {
+        for (int j = 0; j < Inv.columnas; j++)
+        {
+            Inv.Mat[i][j] = Inv.Mat[i][j] / det;
+        }
+    }
+
+    return Inv;
 }
 
 template <class type>
@@ -1575,6 +1696,9 @@ Matriz<type> &Matriz<type>::operator=(const Matriz<type> &Mat2)
         }
     }
 
+    this->filas = Mat2.filas;
+    this->columnas = Mat2.columnas;
+
     return *this;
 }
 
@@ -1602,6 +1726,7 @@ type Matriz<type>::operator[](short int index2)
     this->bracketaux2 = index2;
     return (this->brackethelp((*this)[this->brcketaux], index2));
 }
+
 template <class type>
 Matriz<type> &Matriz<type>::operator=(const type Data)
 {
@@ -1629,16 +1754,45 @@ Matriz<type>::~Matriz()
 
 int main(int argc, char const *argv[])
 {
-    Matriz<int> A(10, 2, 3), B(2, 3, 2), C(2, 2);
-    A[0][0] = 5;
+    Matriz<float> A(10, 2, 3), B(2, 3, 2), C(2, 2), D(3, 3), t, K(4, 4);
+    /* A[0][0] = 5;
     A.print();
     B[0][0] = 1;
     B.print();
     C = A * B;
+    C.print();*/
 
-    C.print();
+    srand(time(NULL));
 
-    std::cout << C[0][0] << std::endl;
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            K[i][j] = 1 + rand() % (11 - 1);
+        }
+    }
+    K.print();
+    K.Determinante();
+
+    /*D[0][0] = -2;
+    D[0][1] = -6;
+    D[0][2] = 2;
+
+    D[1][0] = 0;
+    D[1][1] = 1;
+    D[1][2] = 3;
+
+    D[2][0] = 0;
+    D[2][1] = 0;
+    D[2][2] = 6;
+
+    D.print();
+
+    std::cout << D.Determinante() << std::endl;*/
+
+    /*t = D.inversa();
+    t.print();*/
+
     /*Racional R(2, 16), B(-4, 9), C;
     R.print();
     R.simplify();
