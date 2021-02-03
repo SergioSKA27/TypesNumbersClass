@@ -290,6 +290,11 @@ public:
     Natural operator*(const long long &Num2);
     Natural &operator=(const long long &Num2);
 
+    long long operator()() const //retorna el valor del objeto
+    {
+        return this->value;
+    }
+
     /*Operadores Booleanos*/
     //Operadores con objetos de la clase
     bool operator==(const Natural &Num2) const;
@@ -305,6 +310,12 @@ public:
     bool operator>(const long long &Num2) const;
     bool operator<=(const long long &Num2) const;
     bool operator>=(const long long &Num2) const;
+
+    friend std::ostream &operator<<(std::ostream &os, const Natural &Num)
+    {
+        os << Num.value;
+        return os;
+    }
 
     virtual ~Natural();
 };
@@ -502,6 +513,11 @@ public:
     Entero operator*(const long long &Num2);  //Multiplicacion un entero y un numero(int) y retorna el resultado como un Entero
     Entero &operator=(const long long &Num2); //Asigna el valor de un numero(int) a un entero
 
+    long long operator()() const //retorna el valor del objeto
+    {
+        return this->value;
+    }
+
     /*Operadores Booleanos Con objetos de la clase*/
     bool operator!=(const Entero &Num2) const;
     bool operator==(const Entero &Num2) const;
@@ -523,11 +539,6 @@ public:
     bool operator>(const long long &Num2) const;
     bool operator<=(const long long &Num2) const;
     bool operator>=(const long long &Num2) const;
-
-    void operator delete(void *p)
-    {
-        free(p);
-    }
 
     friend std::ostream &operator<<(std::ostream &os, const Entero &Num)
     {
@@ -594,25 +605,25 @@ Entero &Entero::operator=(const Entero &Num2)
 Entero Entero::operator+(const Natural &Num2)
 {
     Entero Result;
-    Result.value = this->value + Num2._value();
+    Result.value = this->value + Num2();
     return Result;
 }
 Entero Entero::operator-(const Natural &Num2)
 {
     Entero Result;
 
-    Result.value = this->value - Num2._value();
+    Result.value = this->value - Num2();
     return Result;
 }
 Entero Entero::operator*(const Natural &Num2)
 {
     Entero Result;
-    Result.value = this->value * Num2._value();
+    Result.value = this->value * Num2();
     return Result;
 }
 Entero &Entero::operator=(const Natural &Num2)
 {
-    this->value = Num2._value();
+    this->value = Num2();
     return *this;
 }
 
@@ -756,6 +767,11 @@ public:
     Racional operator*(const long long &R2);
     Racional &operator=(const long long &R2);
 
+    long double operator()() const //retorna el valor del objeto como un real
+    {
+        return this->Numerador() / this->Denominador();
+    }
+
     bool operator==(const Racional &R2) const;
     bool operator!=(const Racional &R2) const;
     bool operator<(const Racional &R2) const;
@@ -783,6 +799,12 @@ public:
     bool operator>(const long long &R2) const;
     bool operator<=(const long long &R2) const;
     bool operator>=(const long long &R2) const;
+
+    friend std::ostream &operator<<(std::ostream &os, const Racional &Num)
+    {
+        os << Num.Numerador << '/' << Num.Denominador;
+        return os;
+    }
 
     virtual ~Racional();
 };
@@ -1057,6 +1079,11 @@ public:
     Irracional(const Irracional &I2);
     Irracional();
 
+    long double operator()() const //retorna el valor del objeto
+    {
+        return this->value;
+    }
+
     void print();
     ~Irracional();
 };
@@ -1153,6 +1180,23 @@ public:
     Real operator/(const Racional &Num2);
     Real &operator=(const Racional &Num2);
 
+    Real operator+(const Irracional &Num2);
+    Real operator-(const Irracional &Num2);
+    Real operator*(const Irracional &Num2);
+    Real operator/(const Irracional &Num2);
+    Real &operator=(const Irracional &Num2);
+
+    Real operator+(const long double &Num2);
+    Real operator-(const long double &Num2);
+    Real operator*(const long double &Num2);
+    Real operator/(const long double &Num2);
+    Real &operator=(const long double &Num2);
+
+    long double operator()() const //retorna el valor del objeto
+    {
+        return this->value;
+    }
+
     virtual ~Real();
 };
 
@@ -1218,16 +1262,15 @@ Real Real::operator+(const Real &Num2)
 {
     Real Result;
 
-    Result.value = this->value + Num2.value;
+    Result.value = this->value + Num2();
 
     return Result;
 }
-
 Real Real::operator-(const Real &Num2)
 {
     Real Result;
 
-    Result.value = this->value - Num2.value;
+    Result.value = this->value - Num2();
 
     return Result;
 }
@@ -1235,7 +1278,7 @@ Real Real::operator*(const Real &Num2)
 {
     Real Result;
 
-    Result.value = this->value * Num2.value;
+    Result.value = this->value * Num2();
 
     return Result;
 }
@@ -1246,14 +1289,226 @@ Real Real::operator/(const Real &Num2)
 
     Real Result;
 
-    Result.value = this->value / Num2.value;
+    Result.value = this->value / Num2();
 
     return Result;
 }
 Real &Real::operator=(const Real &Num2)
 {
 
-    this->value = Num2.value;
+    this->value = Num2();
+
+    return *this;
+}
+
+Real Real::operator+(const Natural &Num2)
+{
+    Real Result;
+
+    Result.value = this->value + Num2();
+
+    return Result;
+}
+Real Real::operator-(const Natural &Num2)
+{
+    Real Result;
+
+    Result.value = this->value - Num2();
+
+    return Result;
+}
+Real Real::operator*(const Natural &Num2)
+{
+    Real Result;
+
+    Result.value = this->value * Num2();
+
+    return Result;
+}
+Real Real::operator/(const Natural &Num2)
+{
+    Real Result;
+
+    Result.value = this->value / Num2();
+
+    return Result;
+}
+Real &Real::operator=(const Natural &Num2)
+{
+
+    this->value = Num2();
+
+    return *this;
+}
+
+Real Real::operator+(const Entero &Num2)
+{
+    Real Result;
+
+    Result.value = this->value + Num2();
+
+    return Result;
+}
+Real Real::operator-(const Entero &Num2)
+{
+    Real Result;
+
+    Result.value = this->value - Num2();
+
+    return Result;
+}
+Real Real::operator*(const Entero &Num2)
+{
+    Real Result;
+
+    Result.value = this->value * Num2();
+
+    return Result;
+}
+Real Real::operator/(const Entero &Num2)
+{
+    if (Num2() == 0) //si se quiere dividir por cero se aroja una excepcion
+        throw std::invalid_argument("Division entre 0\n");
+
+    Real Result;
+
+    Result.value = this->value / Num2();
+
+    return Result;
+}
+Real &Real::operator=(const Entero &Num2)
+{
+
+    this->value = Num2();
+
+    return *this;
+}
+
+Real Real::operator+(const Racional &Num2)
+{
+    Real Result;
+
+    Result.value = this->value + Num2();
+
+    return Result;
+}
+Real Real::operator-(const Racional &Num2)
+{
+    Real Result;
+
+    Result.value = this->value - Num2();
+
+    return Result;
+}
+Real Real::operator*(const Racional &Num2)
+{
+    Real Result;
+
+    Result.value = this->value * Num2();
+
+    return Result;
+}
+Real Real::operator/(const Racional &Num2)
+{
+    if (Num2() == 0) //si se quiere dividir por cero se aroja una excepcion
+        throw std::invalid_argument("Division entre 0\n");
+
+    Real Result;
+
+    Result.value = this->value / Num2();
+
+    return Result;
+}
+Real &Real::operator=(const Racional &Num2)
+{
+
+    this->value = Num2();
+
+    return *this;
+}
+
+Real Real::operator+(const Irracional &Num2)
+{
+    Real Result;
+
+    Result.value = this->value + Num2();
+
+    return Result;
+}
+Real Real::operator-(const Irracional &Num2)
+{
+    Real Result;
+
+    Result.value = this->value - Num2();
+
+    return Result;
+}
+Real Real::operator*(const Irracional &Num2)
+{
+    Real Result;
+
+    Result.value = this->value * Num2();
+
+    return Result;
+}
+Real Real::operator/(const Irracional &Num2)
+{
+    if (Num2() == 0) //si se quiere dividir por cero se aroja una excepcion
+        throw std::invalid_argument("Division entre 0\n");
+
+    Real Result;
+
+    Result.value = this->value / Num2();
+
+    return Result;
+}
+Real &Real::operator=(const Irracional &Num2)
+{
+
+    this->value = Num2();
+
+    return *this;
+}
+
+Real Real::operator+(const long double &Num2)
+{
+    Real Result;
+
+    Result.value = this->value + Num2;
+
+    return Result;
+}
+Real Real::operator-(const long double &Num2)
+{
+    Real Result;
+
+    Result.value = this->value - Num2;
+
+    return Result;
+}
+Real Real::operator*(const long double &Num2)
+{
+    Real Result;
+
+    Result.value = this->value * Num2;
+
+    return Result;
+}
+Real Real::operator/(const long double &Num2)
+{
+    if (Num2 == 0) //si se quiere dividir por cero se aroja una excepcion
+        throw std::invalid_argument("Division entre 0\n");
+
+    Real Result;
+
+    Result.value = this->value / Num2;
+
+    return Result;
+}
+Real &Real::operator=(const long double &Num2)
+{
+
+    this->value = Num2;
 
     return *this;
 }
@@ -1755,12 +2010,16 @@ Matriz<type>::~Matriz()
 int main(int argc, char const *argv[])
 {
     Matriz<float> A(10, 2, 3), B(2, 3, 2), C(2, 2), D(3, 3), t, K(4, 4);
+
+    Racional R(4, 5);
+
     /* A[0][0] = 5;
     A.print();
     B[0][0] = 1;
     B.print();
     C = A * B;
     C.print();*/
+    std::cout << R << "\n";
 
     srand(time(NULL));
 
