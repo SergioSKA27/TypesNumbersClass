@@ -36,8 +36,6 @@ public:
     /*Metodos*/
     Number<T> &setvalue(T new_value); //Cambiar el valor del numero
 
-    virtual void print(); // Imprime el valor almacenada
-
     /*Operadores aritmeticos*/
 
     //Operadores para objetos de la clase
@@ -113,11 +111,6 @@ T Number<T>::getvalue()
 {
 
     return this->value;
-}
-template <class T>
-void Number<T>::print()
-{
-    std::cout << this->value << std::endl;
 }
 /*OPERADORES ARITMETICOS CON OBJETOS DE LA CLASE*/
 template <class T>
@@ -275,9 +268,11 @@ public:
     Natural(long long Num);       //Constructor por valor
     Natural();                    //Constructor vacio
     Natural(const Natural &copy); //Constructor copia
-    Natural(Number<unsigned long long> &Num);
 
     unsigned long long _value() const; //retorna el  valor del objeto
+
+    void print();
+
     /*Operadores aritmeticos*/
 
     //Operadores con objetos de la misma clase
@@ -319,7 +314,7 @@ public:
         return os;
     }
 
-    virtual ~Natural();
+    ~Natural();
 };
 
 Natural::Natural(long long Num)
@@ -328,14 +323,6 @@ Natural::Natural(long long Num)
         throw std::invalid_argument("Value need be more greater than zero");
     else //De lo contrario usando la clase Number  asignamos el valor
         this->setvalue(Num);
-}
-
-Natural::Natural(Number<unsigned long long> &Num)
-{
-    if (Num < 1) //Si el valor es menor a 1 arrojamos una excepcion
-        throw std::invalid_argument("Value need be more greater than zero");
-    else //De lo contrario usando la clase Number  asignamos el valor
-        this->setvalue(Num.valcopy);
 }
 
 Natural::Natural()
@@ -350,6 +337,11 @@ Natural::Natural(const Natural &copy)
 unsigned long long Natural::_value() const
 {
     return this->value;
+}
+
+void Natural::print()
+{
+    std::cout << this->value << std::endl;
 }
 
 Natural Natural::operator+(const Natural &Num2)
@@ -494,11 +486,13 @@ class Entero : public Number<long long>
 public:
     Entero(long long Value);    //Constructor por valor
     Entero(const Entero &Num2); //Constructor copia
-    Entero(Number<long long> &Num2);
+    Entero(const Natural &N);
     Entero(); //Constructor vacio
 
     long long _value() const;
     int val();
+
+    void print();
 
     Entero operator+(const Entero &Num2);  //Suma dos enteros y retorna el resultado como un Entero
     Entero operator-(const Entero &Num2);  //Resta dos enteros y retorna el resultado como un Entero
@@ -548,7 +542,7 @@ public:
         return os;
     }
 
-    virtual ~Entero();
+    ~Entero();
 };
 
 Entero::Entero(long long Value)
@@ -559,9 +553,9 @@ Entero::Entero(const Entero &Num2)
 {
     this->value = Num2.value;
 }
-Entero::Entero(Number<long long> &Num2)
+Entero::Entero(const Natural &N)
 {
-    this->value = Num2.valcopy;
+    this->value = N();
 }
 Entero::Entero()
 {
@@ -576,6 +570,11 @@ long long Entero::_value() const
 int Entero::val()
 {
     return this->value;
+}
+
+void Entero::print()
+{
+    std::cout << this->value << std::endl;
 }
 
 Entero Entero::operator+(const Entero &Num2)
@@ -733,6 +732,11 @@ bool Entero::operator>=(const long long &Num2) const
 
 Entero::~Entero()
 {
+    std::ofstream D;
+
+    D.open("NUMEROS.txt", std::ios_base::app);
+
+    D << this->value << "N";
 }
 
 class Racional : private Number<long long>
@@ -744,6 +748,8 @@ private:
 public:
     Racional(long long Num, long long Den);
     Racional(const Racional &N2);
+    Racional(const Entero &E);
+    Racional(const Natural &N);
     Racional();
     //Metodos de la clase Racional
     void simplify(); //Simplifica el numero racional si no es simplificable el numero no se modifica
@@ -823,6 +829,18 @@ Racional::Racional(const Racional &N2)
 {
     this->Numerador = N2.Numerador;
     this->Denominador = N2.Denominador;
+}
+
+Racional::Racional(const Entero &E)
+{
+    this->Numerador = E();
+    this->Denominador = 1;
+}
+
+Racional::Racional(const Natural &N)
+{
+    this->Numerador = N();
+    this->Denominador = 1;
 }
 
 Racional::Racional()
@@ -1153,9 +1171,10 @@ private:
 public:
     Real(long double Rvalue);
     Real(const Real &R2);
-    Real(Natural &N);
-    Real(Entero &E);
-    Real(Racional &R);
+    Real(const Natural &N);
+    Real(const Entero &E);
+    Real(const Racional &R);
+    Real(const Irracional &R);
     Real();
 
     long double nroot(int k); //Calcula la raiz n-esima y retorna el resultado
@@ -1264,17 +1283,18 @@ Real::Real(const Real &R2)
 {
     this->value = R2.value;
 }
-/*Real::Real(Natural &N)
+Real::Real(const Natural &N)
 {
-}*/
-Real::Real(Entero &E)
-{
-    this->value = E.val();
+    this->value = N();
 }
-/*Real::Real(Racional &R)
+Real::Real(const Entero &E)
 {
-    this->value = R.
-}*/
+    this->value = E();
+}
+Real::Real(const Racional &R)
+{
+    this->value = R();
+}
 Real::Real()
 {
     this->value = 0;
@@ -1732,6 +1752,8 @@ public:
     Complejo(long double realPart, long long imaginaryPart);
     Complejo(const Complejo &C2);
 
+    Complejo conj(); //retorna el conjugado
+
     Complejo operator+(const Complejo &C2);
     Complejo operator-(const Complejo &C2);
     Complejo operator*(const Complejo &C2);
@@ -1758,6 +1780,16 @@ Complejo::Complejo()
 {
     this->value = 0;
     this->Ivalue = 0;
+}
+
+Complejo Complejo::conj()
+{
+    Complejo result;
+
+    result.value = this->value;
+    result.Ivalue = -(this->Ivalue);
+
+    return result;
 }
 
 Complejo Complejo::operator+(const Complejo &C2)
@@ -2421,20 +2453,95 @@ Matriz<type>::~Matriz()
 
 int main(int argc, char const *argv[])
 {
-    Racional R(4, 5), y(8, 9);
+    Natural N1(2), N2(10), N3, NS, NR, NM; //Podemos declarara un Natural con un valor inicial o dejarlo vacio(el valor por default es 1)
+    //Si intentamos utilizar un numero que no pertenezca al conjunto de los naturales se arroja una excepcion.
 
-    Matriz<float> A(10, 2, 3), B(2, 3, 2), C(2, 2), D(3, 3), t, K(4, 4);
-    Matriz<Racional> Z(R, 3, 3);
+    Entero E1(1), E2(-54), E3, ES, ER, EM; //Podemos declarara un enetero con un valor inicial o dejarlo vacio(el valor por default es 0)
+    Entero NtoE(N1);                       //Podemos declarar un entero usando un natural(no podemos declar un Natural con un entero)
+    //Si intentemos utilizar un dato que no sea un numero entero se toma la parte entera de dicho numero unicamente
 
-    /* A[0][0] = 5;
+    Racional R1(4, 5), R2(8, 9); //Podemos declarara un Racional con un valor inicial o dejarlo vacio(el valor por default es 1)
+    Racional EtoR(E1), NtoR(N1); //Podemos declarar un racional con un Entero o un Natural(no de manera inversa)
+    //Si intentemos utilizar un datos que no sean un numero(numerador y denominador) entero se toma la parte entera de dichos numeros unicamente
+
+    Irracional P("Pi"), E("e"), Raiz2("SQRT2"), Phi("phi"); //Podemos declarar un irracional colocando el nombre del irracional que queremos utilizar
+    //Si no definimos que irracinal vamos a usar el valor por default es PI
+
+    Real Re1(1.35363), Re2(2);            //podemos declarar un real con un valor inicial(el valor por default)
+    Real NtoRe(N2), EtoRe(E2), RtoRe(R2); //Podemos declarar un Real con un Natural, Entero , Racional o Irracional(no de forma inversa)
+
+    Complejo A(1.3, 5), B(2, -4); //podemos declarar un complejo con valor inicial(el valor por default es 0 + 0i)
+
+    /*Funcionamineto de las clases*/
+    //Naturales
+    //Podemos Imprimir el valor de el numero con la funcion print o directamente utilizando cout
+    N1.print();
+    std::cout << N1 << std::endl;
+
+    N3 = 100; //podemos asignar un numero diractamente a un objeto siempre y cuando pertenezca al conjunto de numeros utilizado
+    /*Podemos operar con objetos de la clase o con numeros siempre y cuando pertenezcan a el conjunto de numeros utilizado*/
+    NS = N1 + N2;
+    NS.print();
+
+    NR = N3 - N2;
+    NR.print();
+
+    NM = N2 * N3;
+    NM.print();
+
+    NS = N1 + 3;
+    NS.print();
+
+    NR = N3 - 6;
+    NR.print();
+
+    NM = N2 * 4;
+    NM.print();
+
+    //ENTEROS
+    //Podemos Imprimir el valor de el numero con la funcion print o directamente utilizando cout
+    E1.print();
+    std::cout << E1 << std::endl;
+
+    E3 = -100; //podemos asignar un numero diractamente a un objeto siempre y cuando pertenezca al conjunto de numeros utilizado
+
+    /*Podemos operar con objetos de la clase Entero(o de la clase Natural) o con numeros siempre y cuando pertenezcan a el conjunto de numeros utilizado*/
+    ES = E1 + E2;
+    ES.print();
+
+    ER = E2 - E3;
+    ER.print();
+
+    NM = N2 * N3;
+    NM.print();
+
+    ES = E1 + N3;
+    ES.print();
+
+    ER = E2 - N1;
+    ER.print();
+
+    EM = E2 * N2;
+    NM.print();
+
+    ES = E1 + (-3);
+    ES.print();
+
+    ER = E2 - 10;
+    ER.print();
+
+    EM = E2 * 4;
+    NM.print();
+
+    /*Matriz<float> A(10, 2, 3), B(2, 3, 2), C(2, 2), D(3, 3), t, K(4, 4);
+    Matriz<Racional> Z(R1, 3, 3);
+
+    A[0][0] = 5;
     A.print();
     B[0][0] = 1;
     B.print();
     C = A * B;
-    C.print();*/
-
-    R = y;
-    std::cout << R << "\n";
+    C.print();
 
     Z.print();
 
@@ -2450,7 +2557,7 @@ int main(int argc, char const *argv[])
     K.print();
     K.Determinante();
 
-    /*D[0][0] = -2;
+    D[0][0] = -2;
     D[0][1] = -6;
     D[0][2] = 2;
 
@@ -2464,18 +2571,10 @@ int main(int argc, char const *argv[])
 
     D.print();
 
-    std::cout << D.Determinante() << std::endl;*/
+    std::cout << D.Determinante() << std::endl;
 
-    /*t = D.inversa();
+    t = D.inversa();
     t.print();*/
-
-    /*Racional R(2, 16), B(-4, 9), C;
-    R.print();
-    R.simplify();
-    R.print();
-    B.print();
-    C = R + B;
-    C.print();*/
 
     return 0;
 }
