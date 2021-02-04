@@ -1775,11 +1775,24 @@ public:
 
     Complejo conj(); //retorna el conjugado
 
+    void print();
+
     Complejo operator+(const Complejo &C2);
     Complejo operator-(const Complejo &C2);
     Complejo operator*(const Complejo &C2);
     Complejo operator/(const Complejo &C2);
     Complejo &operator=(const Complejo &C2);
+
+    long double operator()() const
+    { //retorna el valor real del complejo
+        return this->value;
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const Complejo &Num)
+    {
+        os << Num() << Num.Ivalue;
+        return os;
+    }
 
     Complejo();
     ~Complejo();
@@ -1811,6 +1824,11 @@ Complejo Complejo::conj()
     result.Ivalue = -(this->Ivalue);
 
     return result;
+}
+
+void Complejo::print()
+{
+    std::cout << this->value << this->Ivalue << std::endl;
 }
 
 Complejo Complejo::operator+(const Complejo &C2)
