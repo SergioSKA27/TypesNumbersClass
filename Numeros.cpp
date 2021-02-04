@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <algorithm>
 #include <math.h>
@@ -15,6 +16,7 @@ numérico (int,long,float,...,etc.), dicha clase contiene los operadores aritmé
 booleanos sobrecargados para poder  interactuar con otros objetos de la misma clase y
 con datos de tipo numérico.
 */
+
 template <class T>
 class Number
 {
@@ -1071,7 +1073,7 @@ Racional::~Racional()
 class Irracional : private Number<long double>
 {
 private:
-    char num; //para imprir el caracter
+    std::string num; //para imprir el caracter
     std::string N;
 
 public:
@@ -1085,6 +1087,12 @@ public:
     }
 
     void print();
+
+    friend std::ostream &operator<<(std::ostream &os, const Irracional &Num)
+    {
+        os << Num.num;
+        return os;
+    }
     ~Irracional();
 };
 
@@ -1097,22 +1105,22 @@ Irracional::Irracional(std::string nombre)
 
     if (N == "pi" || N == "p")
     {
-        this->num = 227;
+        this->num = "╔╗";
         this->value = M_PI;
     }
     else if (N == "e")
     {
-        this->num = 'e';
+        this->num = "e";
         this->value = M_E;
     }
     else if (N == "sr2" || N == "s2" || N == "r2" || N == "sqrt2")
     {
         this->value = M_SQRT2;
-        this->num = 201;
+        this->num = "_|2";
     }
     else if (N == "phi")
     {
-        this->num = 232;
+        this->num = "Ø";
         this->value = 1.61803398874989;
     }
 }
@@ -1238,6 +1246,12 @@ public:
     bool operator>(const long double &Num2) const;
     bool operator<=(const long double &Num2) const;
     bool operator>=(const long double &Num2) const;
+
+    friend std::ostream &operator<<(std::ostream &os, const Real &Num)
+    {
+        os << Num();
+        return os;
+    }
 
     virtual ~Real();
 };
@@ -1709,73 +1723,226 @@ Real::~Real()
 {
 }
 
-/*
-La clase complejo herda la clase Number como  long double y almacena 
-la parte real el el valor heredado.
-*/
-/*class Complejo : public Number<long double>
+class Complejo : private Number<long double>
 {
 private:
-    long long value_I;
+    signed long long Ivalue;
 
 public:
-    Complejo(long double Real, long long Imaginary);
-    Complejo(const Complejo &B);
+    Complejo(long double realPart, long long imaginaryPart);
+    Complejo(const Complejo &C2);
     Complejo();
-
-    Complejo conjugado();
-    void print();
-
-    Complejo operator+(const Complejo &Num2);
-    Complejo operator-(const Complejo &Num2);
-    Complejo operator*(const Complejo &Num2);
-    Complejo operator/(const Complejo &Num2);
-    Complejo &operator=(const Complejo &Num2);
-
-    virtual ~Complejo();
+    ~Complejo();
 };
 
-Complejo::Complejo(long double Real, long long Imaginary)
+Complejo::Complejo(long double realPart, long long imaginaryPart)
 {
-    this->value = Real;
-    this->value_I = Imaginary;
+    this->value = realPart;
+    this->Ivalue = imaginaryPart;
 }
-Complejo::Complejo(const Complejo &B)
+
+Complejo::Complejo(const Complejo &C2)
 {
-    this->value = B.value;
-    this->value_I = B.value_I;
+    this->value = C2.value;
+    this->Ivalue = C2.Ivalue;
 }
+
 Complejo::Complejo()
 {
+    this->value = 0;
+    this->Ivalue = 0;
 }
-
-Complejo Complejo::conjugado()
+Complejo::~Complejo()
 {
-    Complejo C;
-    C.value = this->value;
-    C.value_I = -(this->value_I);
-    return C;
 }
 
-Complejo Complejo::operator+(const Complejo &Num2)
+/*
+class Complejo : private Number<long double>
+{ //La parte real la heredamos de la clase Number heredada con tipo long double
+private:
+    signed long long valueI; //Parte Imaginaria
+
+public:
+    Complejo(long double realPart, long long imaginaryPart);
+    Complejo(const Complejo &C2);
+    Complejo();
+
+    Complejo conj(); //retorna el conjugado
+
+    void print();
+
+    Complejo operator+(const Complejo &C2);
+    Complejo operator-(const Complejo &C2);
+    Complejo operator*(const Complejo &C2);
+    Complejo operator/(const Complejo &C2);
+    Complejo &operator=(const Complejo &C2);
+
+    /*Complejo operator+(const Real &C2);
+    Complejo operator-(const Real &C2);
+    Complejo operator*(const Real &C2);
+    Complejo operator/(const Real &C2);
+    Complejo &operator=(const Real &C2);
+
+~Complejo();
+}
+;
+
+Complejo::Complejo(long double realPart, long long imaginaryPart)
+{
+    this->value = realPart;
+    this->valueI = imaginaryPart;
+}
+
+Complejo::Complejo(const Complejo &C2)
+{
+    this->value = C2.value;
+    this->valueI = C2.valueI;
+}
+
+Complejo::Complejo()
+{
+    this->value = 0;
+    this->valueI = 0;
+}
+
+Complejo Complejo::conj()
 {
     Complejo result;
 
-    result.value = this->value + Num2.value;
-    result.value_I = this->value_I + Num2.value_I;
+    result.value = this->value;
+    result.valueI = -(this->valueI);
 
     return result;
 }
 
-Complejo Complejo::operator-(const Complejo &Num2)
+Complejo Complejo::operator+(const Complejo &C2)
 {
     Complejo result;
-
-    result.value = this->value - Num2.value;
-    result.value_I = this->value_I - Num2.value_I;
+    result.value = this->value + C2.value;
+    result.valueI = this->valueI + C2.valueI;
 
     return result;
 }
+
+Complejo Complejo::operator-(const Complejo &C2)
+{
+    Complejo result;
+    result.value = this->value - C2.value;
+    result.valueI = this->valueI - C2.valueI;
+
+    return result;
+}
+
+Complejo Complejo::operator*(const Complejo &C2)
+{
+    Complejo result;
+
+    result.value = (((this->value * C2.value) - (this->valueI * C2.valueI)));
+    result.valueI = (((this->value * C2.valueI) + (this->valueI * C2.value)));
+
+    return result;
+}
+
+Complejo Complejo::operator/(const Complejo &C2)
+{
+    Complejo result;
+    result.value = ((this->value * C2.value) + (this->valueI * C2.valueI)) / (C2.value * C2.value) + (C2.valueI * C2.valueI);
+    result.valueI = ((this->valueI * C2.value) + (this->value * C2.valueI)) / (C2.value * C2.value) + (C2.valueI * C2.valueI);
+    return result;
+}
+
+Complejo &Complejo::operator=(const Complejo &C2)
+{
+    this->value = C2.value;
+    this->valueI = C2.valueI;
+    return *this;
+}
+
+/*
+Complejo Complejo::operator+(const Real &C2)
+{
+    Complejo result, aux(C2(), 0);
+
+    result.value = this->value + aux.value;
+    result.valueI = this->valueI + aux.valueI;
+
+    return result;
+}
+Complejo Complejo::operator-(const Real &C2)
+{
+
+    Complejo result, aux(C2(), 0);
+    result.value = this->value - aux.value;
+    result.valueI = this->valueI - aux.valueI;
+
+    return result;
+}
+Complejo Complejo::operator*(const Real &C2)
+{
+    Complejo result, aux(C2(), 0);
+
+    result.value = (((this->value * aux.value) - (this->valueI * aux.valueI)));
+    result.valueI = (((this->value * aux.valueI) + (this->valueI * aux.value)));
+
+    return result;
+}
+Complejo Complejo::operator/(const Real &C2)
+{
+    Complejo result, aux(C2(), 0);
+    result.value = ((this->value * aux.value) + (this->valueI * aux.valueI)) / (aux.value * aux.value) + (aux.valueI * aux.valueI);
+    result.valueI = ((this->valueI * aux.value) + (this->value * aux.valueI)) / (aux.value * aux.value) + (aux.valueI * aux.valueI);
+    return result;
+}
+Complejo &Complejo::operator=(const Real &C2)
+{
+    Complejo aux(C2(), 0);
+    this->value = aux.value;
+    this->valueI = aux.valueI;
+    return *this;
+}
+
+Complejo Complejo::operator+(long double &C2)
+{
+    Complejo result, aux(C2, 0);
+
+    result.value = this->value + aux.value;
+    result.valueI = this->valueI + aux.valueI;
+
+    return result;
+}
+Complejo Complejo::operator-(long double &C2)
+{
+
+    Complejo result, aux(C2, 0);
+    result.value = this->value - aux.value;
+    result.valueI = this->valueI - aux.valueI;
+
+    return result;
+}
+Complejo Complejo::operator*(long double &C2)
+{
+    Complejo result, aux(C2, 0);
+
+    result.value = (((this->value * aux.value) - (this->valueI * aux.valueI)));
+    result.valueI = (((this->value * aux.valueI) + (this->valueI * aux.value)));
+
+    return result;
+}
+Complejo Complejo::operator/(long double &C2)
+{
+    Complejo result, aux(C2, 0);
+    result.value = ((this->value * aux.value) + (this->valueI * aux.valueI)) / (aux.value * aux.value) + (aux.valueI * aux.valueI);
+    result.valueI = ((this->valueI * aux.value) + (this->value * aux.valueI)) / (aux.value * aux.value) + (aux.valueI * aux.valueI);
+    return result;
+}
+Complejo &Complejo::operator=(long double &C2)
+{
+    Complejo aux(C2, 0);
+    this->value = aux.value;
+    this->valueI = aux.valueI;
+    return *this;
+}
+
 
 Complejo::~Complejo()
 {
@@ -2030,6 +2197,8 @@ Matriz<type> Matriz<type>::inversa()
     inv(A)= -------------
                 |A|
     Donde |A| representa el determiante de la matriz.
+    (la  Inversa  de  la  matriz  solo es  aplicable  apartir  del  conjuto 
+    de los numeros reales(Naturales, Enteros, Racionales e Irracionales no))
 */
 
     Matriz<type> Inv, aux;
