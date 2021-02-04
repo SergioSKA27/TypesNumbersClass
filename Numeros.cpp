@@ -1756,6 +1756,12 @@ bool Real::operator>=(const long double &Num2) const
 
 Real::~Real()
 {
+    std::ofstream D;
+
+    D.open("NUMEROS.txt", std::ios_base::app);
+
+    D << this->value << "R\n";
+    D.close();
 }
 
 class Complejo : private Number<long double>
@@ -2475,8 +2481,8 @@ int main(int argc, char const *argv[])
     Entero NtoE(N1);                       //Podemos declarar un entero usando un natural(no podemos declar un Natural con un entero)
     //Si intentemos utilizar un dato que no sea un numero entero se toma la parte entera de dicho numero unicamente
 
-    Racional R1(4, 5), R2(8, 9); //Podemos declarara un Racional con un valor inicial o dejarlo vacio(el valor por default es 1)
-    Racional EtoR(E1), NtoR(N1); //Podemos declarar un racional con un Entero o un Natural(no de manera inversa)
+    Racional R1(4, 5), R2(8, 9), R3, RS, RR, RM; //Podemos declarara un Racional con un valor inicial o dejarlo vacio(el valor por default es 1)
+    Racional EtoR(E1), NtoR(N1);                 //Podemos declarar un racional con un Entero o un Natural(no de manera inversa)
     //Si intentemos utilizar un datos que no sean un numero(numerador y denominador) entero se toma la parte entera de dichos numeros unicamente
 
     Irracional P("Pi"), E("e"), Raiz2("SQRT2"), Phi("phi"); //Podemos declarar un irracional colocando el nombre del irracional que queremos utilizar
@@ -2547,6 +2553,50 @@ int main(int argc, char const *argv[])
 
     EM = E2 * 4;
     NM.print();
+
+    //Racionales
+    //Podemos Imprimir el valor de el numero con la funcion print o directamente utilizando cout
+    R1.print();
+    std::cout << R1 << std::endl;
+
+    R3 = -10; //podemos asignar un numero diractamente a un objeto siempre y cuando pertenezca al conjunto de numeros utilizado
+
+    /*Podemos operar con objetos de la clase Racional(de la clase Natural o Entera) o con numeros, siempre y cuando pertenezcan a el conjunto de numeros utilizado*/
+    RS = R1 + R2; //Cuando operamos con racionales el resultado siempre se simplifica(si es posible)
+    RS.print();
+
+    RR = R2 - R1;
+    RR.print();
+
+    RM = R2 * R3;
+    RM.print();
+
+    RS = R1 + N1;
+    RS.print();
+
+    RR = R2 - N2;
+    RR.print();
+
+    RM = R2 * NS;
+    RM.print();
+
+    RS = R1 + E1;
+    RS.print();
+
+    RR = R2 - ER;
+    RR.print();
+
+    RM = R2 * E3;
+    RM.print();
+
+    RS = R1 + 10;
+    RS.print();
+
+    RR = R2 - 7;
+    RR.print();
+
+    RM = R2 * 42;
+    RM.print();
 
     /*Matriz<float> A(10, 2, 3), B(2, 3, 2), C(2, 2), D(3, 3), t, K(4, 4);
     Matriz<Racional> Z(R1, 3, 3);
