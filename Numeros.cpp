@@ -472,7 +472,15 @@ bool Natural::operator>=(const long long &Num2) const
     return (this->value >= Num2);
 }
 
-Natural::~Natural() {}
+Natural::~Natural()
+{
+    std::ofstream D;
+
+    D.open("NUMEROS.txt", std::ios_base::app);
+
+    D << this->value << "N\n";
+    D.close();
+}
 
 /*NUMEROS ENTEROS*/
 
@@ -736,7 +744,8 @@ Entero::~Entero()
 
     D.open("NUMEROS.txt", std::ios_base::app);
 
-    D << this->value << "N";
+    D << this->value << "Z\n";
+    D.close();
 }
 
 class Racional : private Number<long long>
@@ -1086,6 +1095,12 @@ bool Racional::operator>=(const Racional &R2) const
 
 Racional::~Racional()
 {
+    std::ofstream D;
+
+    D.open("NUMEROS.txt", std::ios_base::app);
+
+    D << this->Numerador << "/" << this->Denominador << "Q\n";
+    D.close();
 }
 
 class Irracional : private Number<long double>
