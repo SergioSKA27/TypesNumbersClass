@@ -1731,6 +1731,13 @@ private:
 public:
     Complejo(long double realPart, long long imaginaryPart);
     Complejo(const Complejo &C2);
+
+    Complejo operator+(const Complejo &C2);
+    Complejo operator-(const Complejo &C2);
+    Complejo operator*(const Complejo &C2);
+    Complejo operator/(const Complejo &C2);
+    Complejo &operator=(const Complejo &C2);
+
     Complejo();
     ~Complejo();
 };
@@ -1752,6 +1759,50 @@ Complejo::Complejo()
     this->value = 0;
     this->Ivalue = 0;
 }
+
+Complejo Complejo::operator+(const Complejo &C2)
+{
+    Complejo result;
+    result.value = this->value + C2.value;
+    result.Ivalue = this->Ivalue + C2.Ivalue;
+
+    return result;
+}
+
+Complejo Complejo::operator-(const Complejo &C2)
+{
+    Complejo result;
+    result.value = this->value - C2.value;
+    result.Ivalue = this->Ivalue - C2.Ivalue;
+
+    return result;
+}
+
+Complejo Complejo::operator*(const Complejo &C2)
+{
+    Complejo result;
+
+    result.value = (((this->value * C2.value) - (this->Ivalue * C2.Ivalue)));
+    result.Ivalue = (((this->value * C2.Ivalue) + (this->Ivalue * C2.value)));
+
+    return result;
+}
+
+Complejo Complejo::operator/(const Complejo &C2)
+{
+    Complejo result;
+    result.value = ((this->value * C2.value) + (this->Ivalue * C2.Ivalue)) / (C2.value * C2.value) + (C2.Ivalue * C2.Ivalue);
+    result.Ivalue = ((this->Ivalue * C2.value) + (this->value * C2.Ivalue)) / (C2.value * C2.value) + (C2.Ivalue * C2.Ivalue);
+    return result;
+}
+
+Complejo &Complejo::operator=(const Complejo &C2)
+{
+    this->value = C2.value;
+    this->Ivalue = C2.Ivalue;
+    return *this;
+}
+
 Complejo::~Complejo()
 {
 }
