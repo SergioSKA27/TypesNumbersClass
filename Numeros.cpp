@@ -478,7 +478,7 @@ Natural::~Natural()
 
     D.open("NUMEROS.txt", std::ios_base::app);
 
-    D << this->value << "N\n";
+    D << this->value << " N\n";
     D.close();
 }
 
@@ -744,7 +744,7 @@ Entero::~Entero()
 
     D.open("NUMEROS.txt", std::ios_base::app);
 
-    D << this->value << "Z\n";
+    D << this->value << " Z\n";
     D.close();
 }
 
@@ -1099,7 +1099,7 @@ Racional::~Racional()
 
     D.open("NUMEROS.txt", std::ios_base::app);
 
-    D << this->Numerador << "/" << this->Denominador << "Q\n";
+    D << this->Numerador << "/" << this->Denominador << " Q\n";
     D.close();
 }
 
@@ -1218,7 +1218,7 @@ Irracional::~Irracional()
 
     D.open("NUMEROS.txt", std::ios_base::app);
 
-    D << this->num << "I\n";
+    D << this->num << " I\n";
     D.close();
 }
 
@@ -1238,7 +1238,7 @@ public:
 
     long double nroot(int k); //Calcula la raiz n-esima y retorna el resultado
     void root(int k);         //Calcula la raiz n-esima y asigna el resultado al objeto que se le aplico la funcion
-    void potencia(int k);
+    long double potencia(int k);
     void print();
 
     Real operator+(const Real &Num2);
@@ -1373,12 +1373,15 @@ long double Real::_pot(int k)
         return this->_pot(k - 1) * this->value;
 }
 
-void Real::potencia(int k)
+long double Real::potencia(int k)
 {
+    long double result;
     if (k >= 0)
-        this->value = this->_pot(k);
+        result = this->_pot(k);
     else
-        this->value = 1 / this->_pot((unsigned)k);
+        result = 1 / this->_pot(-(k));
+
+    return result;
 }
 
 long double Real::nroot(int k)
@@ -1804,7 +1807,7 @@ Real::~Real()
 
     D.open("NUMEROS.txt", std::ios_base::app);
 
-    D << this->value << "R\n";
+    D << this->value << " R\n";
     D.close();
 }
 
@@ -1834,7 +1837,10 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const Complejo &Num)
     {
-        os << Num() << Num.Ivalue;
+        if (Num.Ivalue < 0)
+            os << Num() << Num.Ivalue;
+        else
+            os << Num() << "+" << Num.Ivalue << "i";
         return os;
     }
 
@@ -1842,7 +1848,7 @@ public:
     ~Complejo();
 };
 
-Complejo::Complejo(long double realPart, long long imaginaryPart)
+Complejo::Complejo(long double realPart, signed long long imaginaryPart)
 {
     this->value = realPart;
     this->Ivalue = imaginaryPart;
@@ -1872,7 +1878,11 @@ Complejo Complejo::conj()
 
 void Complejo::print()
 {
-    std::cout << this->value << this->Ivalue << std::endl;
+
+    if (this->Ivalue < 0)
+        std::cout << this->value << this->Ivalue << "i" << std::endl;
+    else
+        std::cout << this->value << "+" << this->Ivalue << "i" << std::endl;
 }
 
 Complejo Complejo::operator+(const Complejo &C2)
@@ -1920,200 +1930,17 @@ Complejo &Complejo::operator=(const Complejo &C2)
 
 Complejo::~Complejo()
 {
+    std::ofstream D;
+
+    D.open("NUMEROS.txt", std::ios_base::app);
+
+    if (this->Ivalue < 0)
+        D << this->value << this->Ivalue << "i C\n";
+    else
+        D << this->value << "+" << this->Ivalue << "i C\n";
+    D.close();
 }
 
-/*
-class Complejo : private Number<long double>
-{ //La parte real la heredamos de la clase Number heredada con tipo long double
-private:
-    signed long long valueI; //Parte Imaginaria
-
-public:
-    Complejo(long double realPart, long long imaginaryPart);
-    Complejo(const Complejo &C2);
-    Complejo();
-
-    Complejo conj(); //retorna el conjugado
-
-    void print();
-
-    Complejo operator+(const Complejo &C2);
-    Complejo operator-(const Complejo &C2);
-    Complejo operator*(const Complejo &C2);
-    Complejo operator/(const Complejo &C2);
-    Complejo &operator=(const Complejo &C2);
-
-    /*Complejo operator+(const Real &C2);
-    Complejo operator-(const Real &C2);
-    Complejo operator*(const Real &C2);
-    Complejo operator/(const Real &C2);
-    Complejo &operator=(const Real &C2);
-
-~Complejo();
-}
-;
-
-Complejo::Complejo(long double realPart, long long imaginaryPart)
-{
-    this->value = realPart;
-    this->valueI = imaginaryPart;
-}
-
-Complejo::Complejo(const Complejo &C2)
-{
-    this->value = C2.value;
-    this->valueI = C2.valueI;
-}
-
-Complejo::Complejo()
-{
-    this->value = 0;
-    this->valueI = 0;
-}
-
-Complejo Complejo::conj()
-{
-    Complejo result;
-
-    result.value = this->value;
-    result.valueI = -(this->valueI);
-
-    return result;
-}
-
-Complejo Complejo::operator+(const Complejo &C2)
-{
-    Complejo result;
-    result.value = this->value + C2.value;
-    result.valueI = this->valueI + C2.valueI;
-
-    return result;
-}
-
-Complejo Complejo::operator-(const Complejo &C2)
-{
-    Complejo result;
-    result.value = this->value - C2.value;
-    result.valueI = this->valueI - C2.valueI;
-
-    return result;
-}
-
-Complejo Complejo::operator*(const Complejo &C2)
-{
-    Complejo result;
-
-    result.value = (((this->value * C2.value) - (this->valueI * C2.valueI)));
-    result.valueI = (((this->value * C2.valueI) + (this->valueI * C2.value)));
-
-    return result;
-}
-
-Complejo Complejo::operator/(const Complejo &C2)
-{
-    Complejo result;
-    result.value = ((this->value * C2.value) + (this->valueI * C2.valueI)) / (C2.value * C2.value) + (C2.valueI * C2.valueI);
-    result.valueI = ((this->valueI * C2.value) + (this->value * C2.valueI)) / (C2.value * C2.value) + (C2.valueI * C2.valueI);
-    return result;
-}
-
-Complejo &Complejo::operator=(const Complejo &C2)
-{
-    this->value = C2.value;
-    this->valueI = C2.valueI;
-    return *this;
-}
-
-/*
-Complejo Complejo::operator+(const Real &C2)
-{
-    Complejo result, aux(C2(), 0);
-
-    result.value = this->value + aux.value;
-    result.valueI = this->valueI + aux.valueI;
-
-    return result;
-}
-Complejo Complejo::operator-(const Real &C2)
-{
-
-    Complejo result, aux(C2(), 0);
-    result.value = this->value - aux.value;
-    result.valueI = this->valueI - aux.valueI;
-
-    return result;
-}
-Complejo Complejo::operator*(const Real &C2)
-{
-    Complejo result, aux(C2(), 0);
-
-    result.value = (((this->value * aux.value) - (this->valueI * aux.valueI)));
-    result.valueI = (((this->value * aux.valueI) + (this->valueI * aux.value)));
-
-    return result;
-}
-Complejo Complejo::operator/(const Real &C2)
-{
-    Complejo result, aux(C2(), 0);
-    result.value = ((this->value * aux.value) + (this->valueI * aux.valueI)) / (aux.value * aux.value) + (aux.valueI * aux.valueI);
-    result.valueI = ((this->valueI * aux.value) + (this->value * aux.valueI)) / (aux.value * aux.value) + (aux.valueI * aux.valueI);
-    return result;
-}
-Complejo &Complejo::operator=(const Real &C2)
-{
-    Complejo aux(C2(), 0);
-    this->value = aux.value;
-    this->valueI = aux.valueI;
-    return *this;
-}
-
-Complejo Complejo::operator+(long double &C2)
-{
-    Complejo result, aux(C2, 0);
-
-    result.value = this->value + aux.value;
-    result.valueI = this->valueI + aux.valueI;
-
-    return result;
-}
-Complejo Complejo::operator-(long double &C2)
-{
-
-    Complejo result, aux(C2, 0);
-    result.value = this->value - aux.value;
-    result.valueI = this->valueI - aux.valueI;
-
-    return result;
-}
-Complejo Complejo::operator*(long double &C2)
-{
-    Complejo result, aux(C2, 0);
-
-    result.value = (((this->value * aux.value) - (this->valueI * aux.valueI)));
-    result.valueI = (((this->value * aux.valueI) + (this->valueI * aux.value)));
-
-    return result;
-}
-Complejo Complejo::operator/(long double &C2)
-{
-    Complejo result, aux(C2, 0);
-    result.value = ((this->value * aux.value) + (this->valueI * aux.valueI)) / (aux.value * aux.value) + (aux.valueI * aux.valueI);
-    result.valueI = ((this->valueI * aux.value) + (this->value * aux.valueI)) / (aux.value * aux.value) + (aux.valueI * aux.valueI);
-    return result;
-}
-Complejo &Complejo::operator=(long double &C2)
-{
-    Complejo aux(C2, 0);
-    this->value = aux.value;
-    this->valueI = aux.valueI;
-    return *this;
-}
-
-
-Complejo::~Complejo()
-{
-}
-*/
 template <class type>
 class Matriz
 {
@@ -2366,6 +2193,8 @@ Matriz<type> Matriz<type>::inversa()
     (la  Inversa  de  la  matriz  solo es  aplicable  apartir  del  conjuto 
     de los numeros reales(Naturales, Enteros, Racionales e Irracionales no))
 */
+    if (this->Determinante() == 0)
+        throw std::invalid_argument("La matriz no tiene inversa(Determinante igual a 0\n");
 
     Matriz<type> Inv, aux;
 
@@ -2550,10 +2379,10 @@ int main(int argc, char const *argv[])
     Irracional P("Pi"), E("e"), Raiz2("SQRT2"), Phi("phi"); //Podemos declarar un irracional colocando el nombre del irracional que queremos utilizar
     //Si no definimos que irracinal vamos a usar el valor por default es PI
 
-    Real Re1(1.35363), Re2(2);            //podemos declarar un real con un valor inicial(el valor por default)
-    Real NtoRe(N2), EtoRe(E2), RtoRe(R2); //Podemos declarar un Real con un Natural, Entero , Racional o Irracional(no de forma inversa)
+    Real Re1(1.35363), Re2(2), Re3, ReS, ReR, ReM, ReD, RePow, ReSqrt; //podemos declarar un real con un valor inicial(el valor por default)
+    Real NtoRe(N2), EtoRe(E2), RtoRe(R2);                              //Podemos declarar un Real con un Natural, Entero , Racional o Irracional(no de forma inversa)
 
-    Complejo A(1.3, 5), B(2, -4); //podemos declarar un complejo con valor inicial(el valor por default es 0 + 0i)
+    Complejo A(1.3, 5), B(2, -4), C, CS, CR, CM, CD; //podemos declarar un complejo con valor inicial(el valor por default es 0 + 0i)
 
     /*Funcionamineto de las clases*/
     //Naturales
@@ -2659,6 +2488,112 @@ int main(int argc, char const *argv[])
 
     RM = R2 * 42;
     RM.print();
+
+    //Reales
+    //Podemos Imprimir el valor de el numero con la funcion print o directamente utilizando cout
+    Re1.print();
+    std::cout << Re1 << std::endl;
+
+    Re3 = -10.192; //podemos asignar un numero diractamente a un objeto siempre y cuando pertenezca al conjunto de numeros utilizado
+
+    /*Podemos operar con objetos de la clase Real(de la clase Natural,Entera, Racional e Irracional) o con numeros*/
+    ReS = Re1 + R2;
+    ReS.print();
+
+    ReR = Re2 - Re3;
+    ReR.print();
+
+    ReM = Re2 * Re3;
+    ReM.print();
+
+    ReD = Re3 / Re2;
+    ReD.print();
+
+    RePow = Re1.potencia(3);
+    RePow.print();
+
+    RePow = Re1.potencia(-1); //podemos elevar a potencias negativas
+    RePow.print();
+
+    ReS = Re1 + N1;
+    ReS.print();
+
+    ReR = Re2 - N2;
+    ReR.print();
+
+    ReM = Re2 * N3;
+    ReM.print();
+
+    ReD = Re3 / NS;
+    ReD.print();
+
+    ReS = R1 + E1;
+    ReS.print();
+
+    ReR = Re2 - E2;
+    ReR.print();
+
+    ReM = Re2 * E3;
+    ReM.print();
+
+    ReD = Re3 / ES;
+    ReD.print();
+
+    ReS = Re1 + R1;
+    ReS.print();
+
+    ReR = Re2 - R2;
+    ReR.print();
+
+    ReM = Re2 * RS;
+    ReM.print();
+
+    ReD = Re3 / RM;
+    ReD.print();
+
+    ReS = Re1 + P;
+    ReS.print();
+
+    ReR = Re2 - E;
+    ReR.print();
+
+    ReM = Re2 * Phi;
+    ReM.print();
+
+    ReD = Re3 / Raiz2;
+    ReD.print();
+
+    ReS = Re1 + 10;
+    ReS.print();
+
+    ReR = Re2 - 1.5;
+    ReR.print();
+
+    ReM = Re2 * 10.5;
+    ReM.print();
+
+    ReD = Re3 / 3.333;
+    ReD.print();
+
+    //Complejos
+    //Podemos Imprimir el valor de el numero con la funcion print o directamente utilizando cout
+    A.print();
+    std::cout << A << std::endl;
+
+    C = A.conj(); //Conjugado de A
+    C.print();
+
+    CS = A + B;
+    CS.print();
+
+    CR = B - A;
+    CR.print();
+
+    CM = B * A;
+    CM.print();
+
+    CD = A / C;
+    CD.print();
 
     /*Matriz<float> A(10, 2, 3), B(2, 3, 2), C(2, 2), D(3, 3), t, K(4, 4);
     Matriz<Racional> Z(R1, 3, 3);
