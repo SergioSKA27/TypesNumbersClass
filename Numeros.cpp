@@ -1819,6 +1819,7 @@ private:
 public:
     Complejo(long double realPart, long long imaginaryPart);
     Complejo(const Complejo &C2);
+    Complejo();
 
     Complejo conj(); //retorna el conjugado
 
@@ -1844,7 +1845,6 @@ public:
         return os;
     }
 
-    Complejo();
     ~Complejo();
 };
 
@@ -1949,8 +1949,8 @@ private:
     int filas;
     int columnas;
 
-    inline Matriz<type> ExtractMat(type **Mat, int sz, int F, int C);
-    type Det(type **Mat, int sz); //Calcula el determinante por cofactores
+    inline Matriz<type> ExtractMat(type **Mat, int sz, int F, int C); //funcion para el Determinate
+    type Det(type **Mat, int sz);                                     //Calcula el determinante por cofactores
 
     type brackethelp(type *fila, int col); //funcion de ayuda para el operador corche
     int brcketaux, bracketaux2;            //variables auxiliares para indices en corchetes
@@ -2104,7 +2104,6 @@ type Matriz<type>::Det(type **Mat, int sz)
     if (sz == 2)
     {
         detval = ((Mat[0][0] * Mat[1][1]) - (Mat[0][1] * Mat[1][0]));
-        //std::cout << "Det 2: " << detval << std::endl;//Para ver como funciona el algoritmo quita el comentario
         return detval;
     }
     else
@@ -2112,8 +2111,6 @@ type Matriz<type>::Det(type **Mat, int sz)
         for (int i = 0; i < sz; i++)
         {
             res = this->ExtractMat(Mat, sz, 0, i);
-            //res.print();                                //Para ver como funciona el algoritmo quita el comentario
-            //std::cout << "*" << Mat[i][0] << std::endl; //Para ver como funciona el algoritmo quita el comentario
 
             dt = this->Det(res.Mat, sz - 1);
 
@@ -2125,8 +2122,6 @@ type Matriz<type>::Det(type **Mat, int sz)
             {
                 detval += -(Mat[i][0] * dt);
             }
-
-            //std::cout << "Det val: " << detval << std::endl; //Para ver como funciona el algoritmo quita el comentario
         }
         return detval;
     }
@@ -2137,6 +2132,7 @@ type Matriz<type>::Determinante()
 {
     if (this->filas != this->columnas)
         throw std::invalid_argument("La matriz no es cuadrada");
+
     return this->Det(this->Mat, this->filas);
 }
 
@@ -2168,7 +2164,6 @@ Matriz<type> Matriz<type>::adj()
         for (int j = 0; j < this->filas; j++)
         {
             aux = this->ExtractMat(this->Mat, this->filas, i, j);
-            aux.print();
             if (((i + 1) + (j + 1)) % 2 == 0)
             {
                 AD.Mat[i][j] = aux.Determinante();
@@ -2348,6 +2343,20 @@ Matriz<type> &Matriz<type>::operator=(const type Data)
 template <class type>
 Matriz<type>::~Matriz()
 {
+    std::ofstream D;
+
+    D.open("Matrices.txt", std::ios_base::app);
+
+    for (int i = 0; i < this->filas; i++)
+    {
+        for (int j = 0; j < this->columnas; j++)
+        {
+            D << this->Mat[i][j] << "\t";
+        }
+        D << "\n";
+    }
+    D << "\n";
+
     if (sizeof(type) == sizeof(Entero) || sizeof(type) == sizeof(Racional) || sizeof(type) == sizeof(Natural) ||
         sizeof(type) == sizeof(Racional) || sizeof(type) == sizeof(Irracional) || sizeof(type) == sizeof(Real))
     {
@@ -2595,17 +2604,19 @@ int main(int argc, char const *argv[])
     CD = A / C;
     CD.print();
 
-    /*Matriz<float> A(10, 2, 3), B(2, 3, 2), C(2, 2), D(3, 3), t, K(4, 4);
-    Matriz<Racional> Z(R1, 3, 3);
+    std::cout << "\n\n\n";
 
-    A[0][0] = 5;
-    A.print();
-    B[0][0] = 1;
-    B.print();
-    C = A * B;
-    C.print();
+    Matriz<float> AM(10, 2, 3), BM(2, 3, 2), MC(2, 2), DM(3, 3), t, KM(4, 4);
+    Matriz<Racional> ZM(R1, 3, 3);
 
-    Z.print();
+    AM[0][0] = 5;
+    AM.print();
+    BM[0][0] = 1;
+    BM.print();
+    MC = AM * BM;
+    MC.print();
+
+    ZM.print();
 
     srand(time(NULL));
 
@@ -2613,30 +2624,31 @@ int main(int argc, char const *argv[])
     {
         for (int j = 0; j < 4; j++)
         {
-            K[i][j] = 1 + rand() % (11 - 1);
+            KM[i][j] = 1 + rand() % (11 - 1);
         }
     }
-    K.print();
-    K.Determinante();
+    KM.print();
+    //KM.Determinante();
 
-    D[0][0] = -2;
-    D[0][1] = -6;
-    D[0][2] = 2;
+    DM[0][0] = -2;
+    DM[0][1] = -6;
+    DM[0][2] = 2;
 
-    D[1][0] = 0;
-    D[1][1] = 1;
-    D[1][2] = 3;
+    DM[1][0] = 0;
+    DM[1][1] = 1;
+    DM[1][2] = 3;
 
-    D[2][0] = 0;
-    D[2][1] = 0;
-    D[2][2] = 6;
+    DM[2][0] = 0;
+    DM[2][1] = 0;
+    DM[2][2] = 6;
 
-    D.print();
+    DM.print();
 
-    std::cout << D.Determinante() << std::endl;
+    std::cout << "Determinante: " << DM.Determinante() << "\n\n";
 
-    t = D.inversa();
-    t.print();*/
+    t = DM.inversa();
+    std::cout << "Inversa: \n";
+    t.print();
 
     return 0;
 }
