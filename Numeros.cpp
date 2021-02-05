@@ -287,6 +287,8 @@ public:
     Natural operator*(const long long &Num2);
     Natural &operator=(const long long &Num2);
 
+    Natural &operator+=(const Natural &N2);
+
     long long operator()() const //retorna el valor del objeto
     {
         return this->value;
@@ -369,6 +371,12 @@ Natural Natural::operator*(const Natural &Num2)
 Natural &Natural::operator=(const Natural &Num2)
 { //Asigna el valor de un Natural a otro(o el resultado de alguno de los operadores)
     this->value = Num2.value;
+    return *this;
+}
+
+Natural &Natural::operator+=(const Natural &Num2)
+{
+    this->value += Num2();
     return *this;
 }
 
@@ -517,6 +525,8 @@ public:
     Entero operator*(const long long &Num2);  //Multiplicacion un entero y un numero(int) y retorna el resultado como un Entero
     Entero &operator=(const long long &Num2); //Asigna el valor de un numero(int) a un entero
 
+    Entero &operator+=(const Entero &N2);
+
     long long operator()() const //retorna el valor del objeto
     {
         return this->value;
@@ -608,6 +618,12 @@ Entero Entero::operator*(const Entero &Num2)
 Entero &Entero::operator=(const Entero &Num2)
 {
     this->value = Num2.value;
+    return *this;
+}
+
+Entero &Entero::operator+=(const Entero &Num2)
+{
+    this->value += Num2();
     return *this;
 }
 
@@ -784,6 +800,8 @@ public:
     Racional operator*(const long long &R2);
     Racional &operator=(const long long &R2);
 
+    Racional &operator+=(const Racional &R2);
+
     long double operator()() const //retorna el valor del objeto como un real
     {
         return this->Numerador() / this->Denominador();
@@ -951,6 +969,15 @@ Racional &Racional::operator=(const Racional &R2)
 {
     this->Numerador = R2.Numerador;
     this->Denominador = R2.Denominador;
+    return *this;
+}
+
+Racional &Racional::operator+=(const Racional &R2)
+{
+    Racional result;
+
+    result = (*this) + R2;
+    (*this) = result;
     return *this;
 }
 
@@ -1278,6 +1305,8 @@ public:
     Real operator/(const long double &Num2);
     Real &operator=(const long double &Num2);
 
+    Real &operator+=(const Real &Num2);
+
     long double operator()() const //retorna el valor del objeto
     {
         return this->value;
@@ -1435,6 +1464,14 @@ Real &Real::operator=(const Real &Num2)
 {
 
     this->value = Num2();
+
+    return *this;
+}
+
+Real &Real::operator+=(const Real &Num2)
+{
+
+    this->value += Num2();
 
     return *this;
 }
@@ -1831,6 +1868,8 @@ public:
     Complejo operator/(const Complejo &C2);
     Complejo &operator=(const Complejo &C2);
 
+    Complejo &operator+=(const Complejo &C2);
+
     Complejo operator+(const Real &C2);
     Complejo operator-(const Real &C2);
     Complejo operator*(const Real &C2);
@@ -1867,6 +1906,55 @@ public:
     Complejo operator/(const long double &C2);
     Complejo &operator=(const long double &C2);
 
+    bool operator==(const Complejo &C2) const;
+    bool operator!=(const Complejo &C2) const;
+    bool operator<(const Complejo &C2) const;
+    bool operator>(const Complejo &C2) const;
+    bool operator<=(const Complejo &C2) const;
+    bool operator>=(const Complejo &C2) const;
+
+    bool operator==(const Real &C2) const;
+    bool operator!=(const Real &C2) const;
+    bool operator<(const Real &C2) const;
+    bool operator>(const Real &C2) const;
+    bool operator<=(const Real &C2) const;
+    bool operator>=(const Real &C2) const;
+
+    bool operator==(const Irracional &C2) const;
+    bool operator!=(const Irracional &C2) const;
+    bool operator<(const Irracional &C2) const;
+    bool operator>(const Irracional &C2) const;
+    bool operator<=(const Irracional &C2) const;
+    bool operator>=(const Irracional &C2) const;
+
+    bool operator==(const Racional &C2) const;
+    bool operator!=(const Racional &C2) const;
+    bool operator<(const Racional &C2) const;
+    bool operator>(const Racional &C2) const;
+    bool operator<=(const Racional &C2) const;
+    bool operator>=(const Racional &C2) const;
+
+    bool operator==(const Entero &C2) const;
+    bool operator!=(const Entero &C2) const;
+    bool operator<(const Entero &C2) const;
+    bool operator>(const Entero &C2) const;
+    bool operator<=(const Entero &C2) const;
+    bool operator>=(const Entero &C2) const;
+
+    bool operator==(const Natural &C2) const;
+    bool operator!=(const Natural &C2) const;
+    bool operator<(const Natural &C2) const;
+    bool operator>(const Natural &C2) const;
+    bool operator<=(const Natural &C2) const;
+    bool operator>=(const Natural &C2) const;
+
+    bool operator==(const long double &C2) const;
+    bool operator!=(const long double &C2) const;
+    bool operator<(const long double &C2) const;
+    bool operator>(const long double &C2) const;
+    bool operator<=(const long double &C2) const;
+    bool operator>=(const long double &C2) const;
+
     long double operator()() const
     { //retorna el valor real del complejo
         return this->value;
@@ -1874,8 +1962,9 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const Complejo &Num)
     {
+        unsigned long long A = Num.Ivalue;
         if (Num.Ivalue < 0)
-            os << Num() << Num.Ivalue;
+            os << Num() << "-" << A << "i";
         else
             os << Num() << "+" << Num.Ivalue << "i";
         return os;
@@ -1914,9 +2003,9 @@ Complejo Complejo::conj()
 
 void Complejo::print()
 {
-
+    unsigned long long A = this->Ivalue;
     if (this->Ivalue < 0)
-        std::cout << this->value << this->Ivalue << "i" << std::endl;
+        std::cout << this->value << "-" << A << "i" << std::endl;
     else
         std::cout << this->value << "+" << this->Ivalue << "i" << std::endl;
 }
@@ -1958,6 +2047,17 @@ Complejo &Complejo::operator=(const Complejo &C2)
     this->value = C2.value;
     this->Ivalue = C2.Ivalue;
     return *this;
+}
+
+Complejo &Complejo::operator+=(const Complejo &C2)
+{
+    Complejo result;
+
+    result = (*this) + C2;
+
+    (*this) = result;
+
+    return (*this);
 }
 
 Complejo Complejo::operator+(const Real &C2)
@@ -2206,6 +2306,181 @@ Complejo &Complejo::operator=(const long double &C2)
     return *this;
 }
 
+bool Complejo::operator==(const Complejo &C2) const
+{
+    return (this->value == C2.value && this->Ivalue == C2.Ivalue);
+}
+bool Complejo::operator!=(const Complejo &C2) const
+{
+    return (this->value != C2.value && this->Ivalue != C2.Ivalue);
+}
+bool Complejo::operator<(const Complejo &C2) const
+{
+    return (this->value < C2.value && this->Ivalue < C2.Ivalue);
+}
+bool Complejo::operator>(const Complejo &C2) const
+{
+    return (this->value > C2.value && this->Ivalue > C2.Ivalue);
+}
+bool Complejo::operator<=(const Complejo &C2) const
+{
+    return (this->value <= C2.value && this->Ivalue <= C2.Ivalue);
+}
+bool Complejo::operator>=(const Complejo &C2) const
+{
+    return (this->value >= C2.value && this->Ivalue >= C2.Ivalue);
+}
+
+bool Complejo::operator==(const Real &C2) const
+{
+    return (this->value == C2() && this->Ivalue == 0);
+}
+bool Complejo::operator!=(const Real &C2) const
+{
+    return (this->value != C2() && this->Ivalue != 0);
+}
+bool Complejo::operator<(const Real &C2) const
+{
+    return (this->value < C2() && this->Ivalue < 0);
+}
+bool Complejo::operator>(const Real &C2) const
+{
+    return (this->value > C2() && this->Ivalue > 0);
+}
+bool Complejo::operator<=(const Real &C2) const
+{
+    return (this->value <= C2() && this->Ivalue <= 0);
+}
+bool Complejo::operator>=(const Real &C2) const
+{
+    return (this->value >= C2() && this->Ivalue >= 0);
+}
+
+bool Complejo::operator==(const Irracional &C2) const
+{
+    return (this->value == C2() && this->Ivalue == 0);
+}
+bool Complejo::operator!=(const Irracional &C2) const
+{
+    return (this->value != C2() && this->Ivalue != 0);
+}
+bool Complejo::operator<(const Irracional &C2) const
+{
+    return (this->value < C2() && this->Ivalue < 0);
+}
+bool Complejo::operator>(const Irracional &C2) const
+{
+    return (this->value > C2() && this->Ivalue > 0);
+}
+bool Complejo::operator<=(const Irracional &C2) const
+{
+    return (this->value <= C2() && this->Ivalue <= 0);
+}
+bool Complejo::operator>=(const Irracional &C2) const
+{
+    return (this->value >= C2() && this->Ivalue >= 0);
+}
+
+bool Complejo::operator==(const Racional &C2) const
+{
+    return (this->value == C2() && this->Ivalue == 0);
+}
+bool Complejo::operator!=(const Racional &C2) const
+{
+    return (this->value != C2() && this->Ivalue != 0);
+}
+bool Complejo::operator<(const Racional &C2) const
+{
+    return (this->value < C2() && this->Ivalue < 0);
+}
+bool Complejo::operator>(const Racional &C2) const
+{
+    return (this->value > C2() && this->Ivalue > 0);
+}
+bool Complejo::operator<=(const Racional &C2) const
+{
+    return (this->value <= C2() && this->Ivalue <= 0);
+}
+bool Complejo::operator>=(const Racional &C2) const
+{
+    return (this->value >= C2() && this->Ivalue >= 0);
+}
+
+bool Complejo::operator==(const Entero &C2) const
+{
+    return (this->value == C2() && this->Ivalue == 0);
+}
+bool Complejo::operator!=(const Entero &C2) const
+{
+    return (this->value != C2() && this->Ivalue != 0);
+}
+bool Complejo::operator<(const Entero &C2) const
+{
+    return (this->value < C2() && this->Ivalue < 0);
+}
+bool Complejo::operator>(const Entero &C2) const
+{
+    return (this->value > C2() && this->Ivalue > 0);
+}
+bool Complejo::operator<=(const Entero &C2) const
+{
+    return (this->value <= C2() && this->Ivalue <= 0);
+}
+bool Complejo::operator>=(const Entero &C2) const
+{
+    return (this->value >= C2() && this->Ivalue >= 0);
+}
+
+bool Complejo::operator==(const Natural &C2) const
+{
+    return (this->value == C2() && this->Ivalue == 0);
+}
+bool Complejo::operator!=(const Natural &C2) const
+{
+    return (this->value != C2() && this->Ivalue != 0);
+}
+bool Complejo::operator<(const Natural &C2) const
+{
+    return (this->value < C2() && this->Ivalue < 0);
+}
+bool Complejo::operator>(const Natural &C2) const
+{
+    return (this->value > C2() && this->Ivalue > 0);
+}
+bool Complejo::operator<=(const Natural &C2) const
+{
+    return (this->value <= C2() && this->Ivalue <= 0);
+}
+bool Complejo::operator>=(const Natural &C2) const
+{
+    return (this->value >= C2() && this->Ivalue >= 0);
+}
+
+bool Complejo::operator==(const long double &C2) const
+{
+    return (this->value == C2 && this->Ivalue == 0);
+}
+bool Complejo::operator!=(const long double &C2) const
+{
+    return (this->value != C2 && this->Ivalue != 0);
+}
+bool Complejo::operator<(const long double &C2) const
+{
+    return (this->value < C2 && this->Ivalue < 0);
+}
+bool Complejo::operator>(const long double &C2) const
+{
+    return (this->value > C2 && this->Ivalue > 0);
+}
+bool Complejo::operator<=(const long double &C2) const
+{
+    return (this->value <= C2 && this->Ivalue <= 0);
+}
+bool Complejo::operator>=(const long double &C2) const
+{
+    return (this->value >= C2 && this->Ivalue >= 0);
+}
+
 Complejo::~Complejo()
 {
     std::ofstream D;
@@ -2374,9 +2649,13 @@ inline Matriz<type> Matriz<type>::ExtractMat(type **Mat, int sz, int F, int C)
 template <class type>
 type Matriz<type>::Det(type **Mat, int sz)
 {
-    type detval = 0;
+
+    type detval;
+    Complejo aux(-1, 0);
 
     type dt;
+
+    detval = 0;
 
     if (sz == 2)
     {
@@ -2399,7 +2678,7 @@ type Matriz<type>::Det(type **Mat, int sz)
             }
             else
             {
-                detval += -(Mat[i][0] * dt);
+                detval += (Mat[i][0] * dt) * -1;
             }
         }
         return detval;
@@ -2449,7 +2728,7 @@ Matriz<type> Matriz<type>::adj()
             }
             else
             {
-                AD.Mat[i][j] = -(aux.Determinante());
+                AD.Mat[i][j] = aux.Determinante() * -1;
             }
         }
     }
@@ -2549,7 +2828,9 @@ Matriz<type> Matriz<type>::operator*(const Matriz<type> &Mat2)
         throw std::invalid_argument("Las Matrices no se pueden multiplicar\n");
     Matriz<type> Result(this->filas, Mat2.columnas);
 
-    type sum = 0; //si se planea usar objetos estos tienen que tener un 0 y sobrecargar el operador = para poder asignarlo
+    type sum; //si se planea usar objetos estos tienen que tener un 0 y sobrecargar el operador = para poder asignarlo
+
+    sum = 0;
 
     for (int i = 0; i < this->filas; i++)
     {
@@ -2637,7 +2918,8 @@ Matriz<type>::~Matriz()
     D << "\n";
 
     if (sizeof(type) == sizeof(Entero) || sizeof(type) == sizeof(Racional) || sizeof(type) == sizeof(Natural) ||
-        sizeof(type) == sizeof(Racional) || sizeof(type) == sizeof(Irracional) || sizeof(type) == sizeof(Real))
+        sizeof(type) == sizeof(Racional) || sizeof(type) == sizeof(Irracional) || sizeof(type) == sizeof(Real) ||
+        sizeof(Complejo))
     {
     }
     else
@@ -2885,31 +3167,35 @@ int main(int argc, char const *argv[])
 
     std::cout << "\n\n\n";
 
-    Matriz<float> AM(10, 2, 3), BM(2, 3, 2), MC(2, 2), DM(3, 3), t, KM(4, 4);
-    Matriz<Racional> ZM(R1, 3, 3);
+    /* PODEMOS INSTANCIAR MATRICES DE CUALQUIER TIPO*/
+    Matriz<float> AM(10, 2, 3), BM(2, 3, 2), MC(2, 2), DM(3, 3), KM(4), t, a; // Formas de inicializar una matriz(el tamaño por default es 0)
+    Matriz<Racional> ZM(R1, 3, 3);                                            //Matriz de racionales inicializada
+    Matriz<Complejo> MatrizCompleja(4, 4), MCT, MCA, MCI;                     //Matriz de complejos
+    Matriz<Complejo> MB(4, 4), MS, MR, MM;
 
-    AM[0][0] = 5;
+    AM[0][0] = 5; //Podemos asignar valor a las casillas del objeto directamente
     AM.print();
-    BM[0][0] = 1;
+    BM[1][2] = -15;
     BM.print();
-    MC = AM * BM;
-    MC.print();
-
-    ZM.print();
 
     srand(time(NULL));
 
     for (int i = 0; i < 4; i++)
-    {
+    { //llenando una matriz de de flotantes con numeros aleatorios
         for (int j = 0; j < 4; j++)
         {
             KM[i][j] = 1 + rand() % (11 - 1);
         }
     }
-    KM.print();
-    //KM.Determinante();
+    KM.print();                                  //Imprimimos la matriz con numeros aleatorios
+    std::cout << KM.Determinante() << std::endl; //Podemos obtener el determinante
+    a = KM.transp();                             //de igual forma podemos obtener la transpuesta de la matriz
+    a.print();
+    a = KM.adj(); //Igualmente podemos obtener la adjunta de la matriz
+    a.print();
+    a = KM.inversa(); //de igual forma podemos obtener la inversa(si es que la tiene de lo contrario lanza una excepcion)
 
-    DM[0][0] = -2;
+    DM[0][0] = -2; //Asiganando valores a una matriz
     DM[0][1] = -6;
     DM[0][2] = 2;
 
@@ -2923,11 +3209,52 @@ int main(int argc, char const *argv[])
 
     DM.print();
 
-    std::cout << "Determinante: " << DM.Determinante() << "\n\n";
+    std::cout << "Determinante: " << DM.Determinante() << "\n\n"; //determinate
 
     t = DM.inversa();
     std::cout << "Inversa: \n";
-    t.print();
+    t.print(); //Inversa de la matriz
+
+    for (int i = 0; i < 4; i++)
+    { //llenando una matriz de de complejos con numeros aleatorios
+        for (int j = 0; j < 4; j++)
+        {
+            long long a = 1 + rand() % (11 - 1);
+            long long b = 1 + rand() % (11 - 1);
+
+            long long c = 1 + rand() % (11 - 1);
+            long long d = 1 + rand() % (11 - 1);
+            Complejo aux(a, b), aux2(c, d);
+            MatrizCompleja[i][j] = aux;
+            MB[i][j] = aux2;
+        }
+    }
+    /*las operaciones se pueden llevar a cabo con cualquier tipo*/
+    MatrizCompleja.print();
+    MB.print();
+    std::cout << "Suma Matrices: " << std::endl;
+    MS = MatrizCompleja + MB;
+    MS.print();
+    std::cout << "Resta Matrices: " << std::endl;
+    MR = MB - MatrizCompleja;
+    MR.print();
+    std::cout << "Multiplicacion Matrices: " << std::endl;
+    MM = MatrizCompleja * MB;
+    MM.print();
+
+    std::cout << "Determiante Matriz de Complejos: " << MatrizCompleja.Determinante() << std::endl;
+    MatrizCompleja.print();
+
+    std::cout << "Martriz trasnpuesta: " << std::endl;
+    MCT = MatrizCompleja.transp();
+    MCT.print();
+    std::cout << "Martriz adjunta: " << std::endl;
+    MCA = MatrizCompleja.adj();
+    MCA.print();
+
+    std::cout << "Martriz inversa: " << std::endl;
+    MCI = MatrizCompleja.inversa();
+    MCI.print();
 
     return 0;
 }
