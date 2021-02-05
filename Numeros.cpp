@@ -1119,6 +1119,13 @@ public:
         return this->value;
     }
 
+    bool operator==(const Irracional &I2) const;
+    bool operator!=(const Irracional &I2) const;
+    bool operator<(const Irracional &I2) const;
+    bool operator>(const Irracional &I2) const;
+    bool operator<=(const Irracional &I2) const;
+    bool operator>=(const Irracional &I2) const;
+
     void print();
 
     friend std::ostream &operator<<(std::ostream &os, const Irracional &Num)
@@ -1165,8 +1172,9 @@ Irracional::Irracional(const Irracional &I2)
 }
 Irracional::Irracional()
 { //Si no se inicializa el constructor el numero por default es PI
-    this->num = 227;
+    this->num = "╔╗";
     this->value = M_PI;
+    this->N = "pi";
 }
 
 void Irracional::print()
@@ -1174,8 +1182,44 @@ void Irracional::print()
     std::cout << this->num << std::endl;
 }
 
+bool Irracional::operator==(const Irracional &I2) const
+{
+    return (this->value == I2.value);
+}
+
+bool Irracional::operator!=(const Irracional &I2) const
+{
+    return (this->value != I2.value);
+}
+
+bool Irracional::operator<(const Irracional &I2) const
+{
+    return (this->value < I2.value);
+}
+
+bool Irracional::operator>(const Irracional &I2) const
+{
+    return (this->value > I2.value);
+}
+
+bool Irracional::operator<=(const Irracional &I2) const
+{
+    return (this->value <= I2.value);
+}
+
+bool Irracional::operator>=(const Irracional &I2) const
+{
+    return (this->value >= I2.value);
+}
+
 Irracional::~Irracional()
 {
+    std::ofstream D;
+
+    D.open("NUMEROS.txt", std::ios_base::app);
+
+    D << this->num << "I\n";
+    D.close();
 }
 
 class Real : public Number<long double>
