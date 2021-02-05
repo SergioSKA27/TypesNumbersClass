@@ -509,7 +509,7 @@ public:
     int val();
 
     void print();
-
+    //Operadores con objetos de la misma clase(Naturales o Numeros)
     Entero operator+(const Entero &Num2);  //Suma dos enteros y retorna el resultado como un Entero
     Entero operator-(const Entero &Num2);  //Resta dos enteros y retorna el resultado como un Entero
     Entero operator*(const Entero &Num2);  //Multiplica dos enteros y retorna el resultado como un Entero
@@ -779,7 +779,7 @@ public:
     //Metodos de la clase Racional
     void simplify(); //Simplifica el numero racional si no es simplificable el numero no se modifica
     void print();
-
+    //Operadores con objetos de la misma clase o clases previas(Naturales,Enteros o numeros)
     Racional operator+(const Racional &R2);
     Racional operator-(const Racional &R2);
     Racional operator*(const Racional &R2);
@@ -806,7 +806,7 @@ public:
     {
         return this->Numerador() / this->Denominador();
     }
-
+    /*Operadores Booleanos Con objetos de la clase*/
     bool operator==(const Racional &R2) const;
     bool operator!=(const Racional &R2) const;
     bool operator<(const Racional &R2) const;
@@ -1146,6 +1146,7 @@ public:
         return this->value;
     }
 
+    /*Operadores Booleanos Con objetos de la clase*/
     bool operator==(const Irracional &I2) const;
     bool operator!=(const Irracional &I2) const;
     bool operator<(const Irracional &I2) const;
@@ -1264,10 +1265,10 @@ public:
     Real();
 
     long double nroot(int k); //Calcula la raiz n-esima y retorna el resultado
-    void root(int k);         //Calcula la raiz n-esima y asigna el resultado al objeto que se le aplico la funcion
+    long double root(int k);  //Retorna la raiz cuadrada
     long double potencia(int k);
     void print();
-
+    //Operadores con objetos de la misma clase(Naturales, enteros, racionales e irracionales)
     Real operator+(const Real &Num2);
     Real operator-(const Real &Num2);
     Real operator*(const Real &Num2);
@@ -1311,7 +1312,7 @@ public:
     {
         return this->value;
     }
-
+    /*Operadores Booleanos Con objetos de la clase*/
     bool operator==(const Real &Num2) const;
     bool operator!=(const Real &Num2) const;
     bool operator<(const Real &Num2) const;
@@ -1420,9 +1421,9 @@ long double Real::nroot(int k)
     return res;
 }
 
-void Real::root(int k)
+long double Real::root(int k)
 {
-    this->value = this->nroot(k);
+    return std::sqrt(this->value);
 }
 
 Real Real::operator+(const Real &Num2)
@@ -1861,7 +1862,7 @@ public:
     Complejo conj(); //retorna el conjugado
 
     void print();
-
+    //Operadores con objetos de la misma clase(Naturales, enteros, racionales,irracionales y reales)
     Complejo operator+(const Complejo &C2);
     Complejo operator-(const Complejo &C2);
     Complejo operator*(const Complejo &C2);
@@ -1906,6 +1907,7 @@ public:
     Complejo operator/(const long double &C2);
     Complejo &operator=(const long double &C2);
 
+    /*Operadores Booleanos Con objetos de la clase*/
     bool operator==(const Complejo &C2) const;
     bool operator!=(const Complejo &C2) const;
     bool operator<(const Complejo &C2) const;
@@ -2493,6 +2495,12 @@ Complejo::~Complejo()
         D << this->value << "+" << this->Ivalue << "i C\n";
     D.close();
 }
+
+/*
+La clase Matriz funciona como un template es decir que podemos instanciar el objeto 
+Matriz con cualquier tipo las operaciones con matrices solo estan disponibles con tipos
+Numericos o objetos con los operadores aritmeticos sobrecargados
+*/
 
 template <class type>
 class Matriz
