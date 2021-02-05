@@ -1831,6 +1831,42 @@ public:
     Complejo operator/(const Complejo &C2);
     Complejo &operator=(const Complejo &C2);
 
+    Complejo operator+(const Real &C2);
+    Complejo operator-(const Real &C2);
+    Complejo operator*(const Real &C2);
+    Complejo operator/(const Real &C2);
+    Complejo &operator=(const Real &C2);
+
+    Complejo operator+(const Irracional &C2);
+    Complejo operator-(const Irracional &C2);
+    Complejo operator*(const Irracional &C2);
+    Complejo operator/(const Irracional &C2);
+    Complejo &operator=(const Irracional &C2);
+
+    Complejo operator+(const Racional &C2);
+    Complejo operator-(const Racional &C2);
+    Complejo operator*(const Racional &C2);
+    Complejo operator/(const Racional &C2);
+    Complejo &operator=(const Racional &C2);
+
+    Complejo operator+(const Entero &C2);
+    Complejo operator-(const Entero &C2);
+    Complejo operator*(const Entero &C2);
+    Complejo operator/(const Entero &C2);
+    Complejo &operator=(const Entero &C2);
+
+    Complejo operator+(const Natural &C2);
+    Complejo operator-(const Natural &C2);
+    Complejo operator*(const Natural &C2);
+    Complejo operator/(const Natural &C2);
+    Complejo &operator=(const Natural &C2);
+
+    Complejo operator+(const long double &C2);
+    Complejo operator-(const long double &C2);
+    Complejo operator*(const long double &C2);
+    Complejo operator/(const long double &C2);
+    Complejo &operator=(const long double &C2);
+
     long double operator()() const
     { //retorna el valor real del complejo
         return this->value;
@@ -1893,7 +1929,6 @@ Complejo Complejo::operator+(const Complejo &C2)
 
     return result;
 }
-
 Complejo Complejo::operator-(const Complejo &C2)
 {
     Complejo result;
@@ -1902,7 +1937,6 @@ Complejo Complejo::operator-(const Complejo &C2)
 
     return result;
 }
-
 Complejo Complejo::operator*(const Complejo &C2)
 {
     Complejo result;
@@ -1912,7 +1946,6 @@ Complejo Complejo::operator*(const Complejo &C2)
 
     return result;
 }
-
 Complejo Complejo::operator/(const Complejo &C2)
 {
     Complejo result;
@@ -1920,11 +1953,215 @@ Complejo Complejo::operator/(const Complejo &C2)
     result.Ivalue = ((this->Ivalue * C2.value) + (this->value * C2.Ivalue)) / (C2.value * C2.value) + (C2.Ivalue * C2.Ivalue);
     return result;
 }
-
 Complejo &Complejo::operator=(const Complejo &C2)
 {
     this->value = C2.value;
     this->Ivalue = C2.Ivalue;
+    return *this;
+}
+
+Complejo Complejo::operator+(const Real &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value + C2();
+    result.Ivalue = this->Ivalue + 0;
+
+    return result;
+}
+Complejo Complejo::operator-(const Real &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value - C2();
+    result.Ivalue = this->Ivalue - 0;
+
+    return result;
+}
+Complejo Complejo::operator*(const Real &C2)
+{ //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+
+    result.value = (((this->value * C2()) - (this->Ivalue * 0)));
+    result.Ivalue = (((this->value * 0) + (this->Ivalue * C2())));
+
+    return result;
+}
+Complejo Complejo::operator/(const Real &C2)
+{
+    Complejo result;
+    result.value = ((this->value * C2()) + (this->Ivalue * 0)) / (C2() * C2()) + 0;
+    result.Ivalue = ((this->Ivalue * C2()) + (this->value * 0)) / (C2() * C2()) + 0;
+    return result;
+}
+Complejo &Complejo::operator=(const Real &C2)
+{
+    this->value = C2();
+    this->Ivalue = 0;
+    return *this;
+}
+
+Complejo Complejo::operator+(const Irracional &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value + C2();
+    result.Ivalue = this->Ivalue + 0;
+
+    return result;
+}
+Complejo Complejo::operator-(const Irracional &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value - C2();
+    result.Ivalue = this->Ivalue - 0;
+
+    return result;
+}
+Complejo Complejo::operator*(const Irracional &C2)
+{ //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+
+    result.value = (((this->value * C2()) - (this->Ivalue * 0)));
+    result.Ivalue = (((this->value * 0) + (this->Ivalue * C2())));
+
+    return result;
+}
+Complejo Complejo::operator/(const Irracional &C2)
+{
+    Complejo result;
+    result.value = ((this->value * C2()) + (this->Ivalue * 0)) / (C2() * C2()) + 0;
+    result.Ivalue = ((this->Ivalue * C2()) + (this->value * 0)) / (C2() * C2()) + 0;
+    return result;
+}
+Complejo &Complejo::operator=(const Irracional &C2)
+{
+    this->value = C2();
+    this->Ivalue = 0;
+    return *this;
+}
+
+Complejo Complejo::operator+(const Racional &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value + C2();
+    result.Ivalue = this->Ivalue + 0;
+
+    return result;
+}
+Complejo Complejo::operator-(const Racional &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value - C2();
+    result.Ivalue = this->Ivalue - 0;
+
+    return result;
+}
+Complejo Complejo::operator*(const Racional &C2)
+{ //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+
+    result.value = (((this->value * C2()) - (this->Ivalue * 0)));
+    result.Ivalue = (((this->value * 0) + (this->Ivalue * C2())));
+
+    return result;
+}
+Complejo Complejo::operator/(const Racional &C2)
+{
+    Complejo result;
+    result.value = ((this->value * C2()) + (this->Ivalue * 0)) / (C2() * C2()) + 0;
+    result.Ivalue = ((this->Ivalue * C2()) + (this->value * 0)) / (C2() * C2()) + 0;
+    return result;
+}
+Complejo &Complejo::operator=(const Racional &C2)
+{
+    this->value = C2();
+    this->Ivalue = 0;
+    return *this;
+}
+
+Complejo Complejo::operator+(const Entero &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value + C2();
+    result.Ivalue = this->Ivalue + 0;
+
+    return result;
+}
+Complejo Complejo::operator-(const Entero &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value - C2();
+    result.Ivalue = this->Ivalue - 0;
+
+    return result;
+}
+Complejo Complejo::operator*(const Entero &C2)
+{ //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+
+    result.value = (((this->value * C2()) - (this->Ivalue * 0)));
+    result.Ivalue = (((this->value * 0) + (this->Ivalue * C2())));
+
+    return result;
+}
+Complejo Complejo::operator/(const Entero &C2)
+{
+    Complejo result;
+    result.value = ((this->value * C2()) + (this->Ivalue * 0)) / (C2() * C2()) + 0;
+    result.Ivalue = ((this->Ivalue * C2()) + (this->value * 0)) / (C2() * C2()) + 0;
+    return result;
+}
+Complejo &Complejo::operator=(const Entero &C2)
+{
+    this->value = C2();
+    this->Ivalue = 0;
+    return *this;
+}
+
+Complejo Complejo::operator+(const Natural &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value + C2();
+    result.Ivalue = this->Ivalue + 0;
+
+    return result;
+}
+Complejo Complejo::operator-(const Natural &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value - C2();
+    result.Ivalue = this->Ivalue - 0;
+
+    return result;
+}
+Complejo Complejo::operator*(const Natural &C2)
+{ //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+
+    result.value = (((this->value * C2()) - (this->Ivalue * 0)));
+    result.Ivalue = (((this->value * 0) + (this->Ivalue * C2())));
+
+    return result;
+}
+Complejo Complejo::operator/(const Natural &C2)
+{
+    Complejo result;
+    result.value = ((this->value * C2()) + (this->Ivalue * 0)) / (C2() * C2()) + 0;
+    result.Ivalue = ((this->Ivalue * C2()) + (this->value * 0)) / (C2() * C2()) + 0;
+    return result;
+}
+Complejo &Complejo::operator=(const Natural &C2)
+{
+    this->value = C2();
+    this->Ivalue = 0;
     return *this;
 }
 
