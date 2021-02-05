@@ -2165,6 +2165,47 @@ Complejo &Complejo::operator=(const Natural &C2)
     return *this;
 }
 
+Complejo Complejo::operator+(const long double &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value + C2;
+    result.Ivalue = this->Ivalue + 0;
+
+    return result;
+}
+Complejo Complejo::operator-(const long double &C2)
+{
+    //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+    result.value = this->value - C2;
+    result.Ivalue = this->Ivalue - 0;
+
+    return result;
+}
+Complejo Complejo::operator*(const long double &C2)
+{ //si operamos con reales estos se asumen como num + 0i
+    Complejo result;
+
+    result.value = (((this->value * C2) - (this->Ivalue * 0)));
+    result.Ivalue = (((this->value * 0) + (this->Ivalue * C2)));
+
+    return result;
+}
+Complejo Complejo::operator/(const long double &C2)
+{
+    Complejo result;
+    result.value = ((this->value * C2) + (this->Ivalue * 0)) / (C2 * C2) + 0;
+    result.Ivalue = ((this->Ivalue * C2) + (this->value * 0)) / (C2 * C2) + 0;
+    return result;
+}
+Complejo &Complejo::operator=(const long double &C2)
+{
+    this->value = C2;
+    this->Ivalue = 0;
+    return *this;
+}
+
 Complejo::~Complejo()
 {
     std::ofstream D;
