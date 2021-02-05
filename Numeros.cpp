@@ -2096,7 +2096,6 @@ inline Matriz<type> Matriz<type>::ExtractMat(type **Mat, int sz, int F, int C)
 template <class type>
 type Matriz<type>::Det(type **Mat, int sz)
 {
-    Matriz<type> res(sz - 1, sz - 1);
     type detval = 0;
 
     type dt;
@@ -2108,6 +2107,8 @@ type Matriz<type>::Det(type **Mat, int sz)
     }
     else
     {
+        Matriz<type> res(sz - 1, sz - 1);
+
         for (int i = 0; i < sz; i++)
         {
             res = this->ExtractMat(Mat, sz, 0, i);
