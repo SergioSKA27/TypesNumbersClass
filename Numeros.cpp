@@ -1261,11 +1261,11 @@ public:
     Real(const Natural &N);
     Real(const Entero &E);
     Real(const Racional &R);
-    Real(const Irracional &R);
+    Real(const Irracional &I);
     Real();
 
     long double nroot(int k); //Calcula la raiz n-esima y retorna el resultado
-    long double root(int k);  //Retorna la raiz cuadrada
+    long double root(int k);  //Retorna laR raiz cuadrada
     long double potencia(int k);
     void print();
     //Operadores con objetos de la misma clase(Naturales, enteros, racionales e irracionales)
@@ -1384,6 +1384,12 @@ Real::Real(const Racional &R)
 {
     this->value = R();
 }
+
+Real::Real(const Irracional &I)
+{
+    this->value = I();
+}
+
 Real::Real()
 {
     this->value = 0;
@@ -2959,7 +2965,7 @@ int main(int argc, char const *argv[])
     //Si no definimos que irracinal vamos a usar el valor por default es PI
 
     Real Re1(1.35363), Re2(2), Re3, ReS, ReR, ReM, ReD, RePow, ReSqrt; //podemos declarar un real con un valor inicial(el valor por default)
-    Real NtoRe(N2), EtoRe(E2), RtoRe(R2);                              //Podemos declarar un Real con un Natural, Entero , Racional o Irracional(no de forma inversa)
+    Real NtoRe(N2), EtoRe(E2), RtoRe(R2), ItoRe(Phi);                  //Podemos declarar un Real con un Natural, Entero , Racional o Irracional(no de forma inversa)
 
     Complejo A(1.3, 5), B(2, -4), C, CS, CR, CM, CD; //podemos declarar un complejo con valor inicial(el valor por default es 0 + 0i)
 
