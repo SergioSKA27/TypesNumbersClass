@@ -1852,7 +1852,7 @@ Real::~Real()
 class Complejo : private Number<long double>
 {
 private:
-    signed long long Ivalue;
+    long long Ivalue;
 
 public:
     Complejo(long double realPart, long long imaginaryPart);
@@ -1964,18 +1964,18 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const Complejo &Num)
     {
-        unsigned long long A = Num.Ivalue;
         if (Num.Ivalue < 0)
-            os << Num() << "-" << A << "i";
+            os << Num() << Num.Ivalue << "i";
         else
             os << Num() << "+" << Num.Ivalue << "i";
+
         return os;
     }
 
     ~Complejo();
 };
 
-Complejo::Complejo(long double realPart, signed long long imaginaryPart)
+Complejo::Complejo(long double realPart, long long imaginaryPart)
 {
     this->value = realPart;
     this->Ivalue = imaginaryPart;
@@ -1997,17 +1997,17 @@ Complejo Complejo::conj()
 {
     Complejo result;
 
-    result.value = this->value;
-    result.Ivalue = -(this->Ivalue);
+    result.value = (*this)();
+
+    result.Ivalue = -1 * this->Ivalue;
 
     return result;
 }
 
 void Complejo::print()
 {
-    unsigned long long A = this->Ivalue;
     if (this->Ivalue < 0)
-        std::cout << this->value << "-" << A << "i" << std::endl;
+        std::cout << this->value << this->Ivalue << "i" << std::endl;
     else
         std::cout << this->value << "+" << this->Ivalue << "i" << std::endl;
 }
@@ -2048,6 +2048,7 @@ Complejo &Complejo::operator=(const Complejo &C2)
 {
     this->value = C2.value;
     this->Ivalue = C2.Ivalue;
+
     return *this;
 }
 
@@ -3153,6 +3154,21 @@ int main(int argc, char const *argv[])
     ReD = Re3 / 3.333;
     ReD.print();
 
+    Re1 = P; //podemos asignar irracionales y operar con ellos de igual forma
+    Re2 = Raiz2;
+
+    ReS = Re1 + Re2;
+    ReS.print();
+
+    ReR = Re1 - Phi;
+    ReR.print();
+
+    ReM = Re2 * E;
+    ReM.print();
+
+    ReD = ReM / P;
+    ReD.print();
+
     //Complejos
     //Podemos Imprimir el valor de el numero con la funcion print o directamente utilizando cout
     A.print();
@@ -3195,9 +3211,9 @@ int main(int argc, char const *argv[])
             KM[i][j] = 1 + rand() % (11 - 1);
         }
     }
-    KM.print();                                  //Imprimimos la matriz con numeros aleatorios
-    std::cout << KM.Determinante() << std::endl; //Podemos obtener el determinante
-    a = KM.transp();                             //de igual forma podemos obtener la transpuesta de la matriz
+    KM.print();                                                                          //Imprimimos la matriz con numeros aleatorios
+    std::cout << "Determinante Matriz de flotantes: " << KM.Determinante() << std::endl; //Podemos obtener el determinante
+    a = KM.transp();                                                                     //de igual forma podemos obtener la transpuesta de la matriz
     a.print();
     a = KM.adj(); //Igualmente podemos obtener la adjunta de la matriz
     a.print();
@@ -3217,10 +3233,10 @@ int main(int argc, char const *argv[])
 
     DM.print();
 
-    std::cout << "Determinante: " << DM.Determinante() << "\n\n"; //determinate
+    std::cout << "Determinante matriz DM: " << DM.Determinante() << "\n\n"; //determinate
 
     t = DM.inversa();
-    std::cout << "Inversa: \n";
+    std::cout << "Inversa Matriz DM: \n";
     t.print(); //Inversa de la matriz
 
     for (int i = 0; i < 4; i++)
